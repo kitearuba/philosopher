@@ -16,7 +16,7 @@
 /*                                                                            */
 /*                              :::  MAIN  :::                                */
 /*                                                                            */
-/*   Description: Entry point of the FDF project.                             */
+/*   Description: Entry point of the Philosopher project.                             */
 /*                                                                            */
 /*   - Validates command-line arguments.                                      */
 /*   - Parses the map from the provided file.                                 */
@@ -29,11 +29,10 @@
 
 int	main(int argc, char **argv)
 {
-	t_map	map;
-	t_fdf	*fdf;
+  	s_table	table;
 
-	if (argc != 2)
-		fatal_error("Usage: ./fdf <filename>");
+	init_simulation(&table, argc, argv);
+
 	ft_memset(&map, 0, sizeof(t_map));
 	if (!parse_map(argv[1], &map))
 		fatal_error("Error: Failed to parse map");

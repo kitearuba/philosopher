@@ -45,6 +45,7 @@ typedef struct	s_table
 		int				time_to_die;
 		int				time_to_eat;
 		int				time_to_sleep;
+        int				num_meals;
         pthread_mutex_t	*forks;
         pthread_mutex_t	print_lock;
         t_philosophers	*philosophers;
@@ -54,10 +55,15 @@ typedef struct	s_table
 
 
 /* ************************************************************************** */
-/*                          Parsing & Validation                              */
+/*                         Initiation & Validation                            */
 /* ************************************************************************** */
 
-int			parse_strict_atoi(const char *str, char **args);
+int			init_simulation(t_table *table, int *argc, char **argv);
+void		start_simulation(t_table *table);
+void		philosopher_routine(void *arg);
+long		get_time_in_ms(void);
+void		ft_usleep(int milliseconds);
+void		print_action(t_philosophers *philo, const char *message);
 
 /* ************************************************************************** */
 /*                          Error Handling                                    */
