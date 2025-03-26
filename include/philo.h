@@ -22,7 +22,6 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <sys/time.h>
-# include "philo.h"
 
 /* ************************************************************************** */
 /*                              Structures                                    */
@@ -58,7 +57,7 @@ typedef struct	s_table
 /*                         Initiation & Validation                            */
 /* ************************************************************************** */
 
-int			init_simulation(t_table *table, int *argc, char **argv);
+int			init_simulation(t_table *table, int argc, char **argv);
 void		start_simulation(t_table *table);
 void		philosopher_routine(void *arg);
 long		get_time_in_ms(void);

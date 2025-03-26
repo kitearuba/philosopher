@@ -10,38 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/fdf.h"
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                              :::  MAIN  :::                                */
-/*                                                                            */
-/*   Description: Entry point of the Philosopher project.                             */
-/*                                                                            */
-/*   - Validates command-line arguments.                                      */
-/*   - Parses the map from the provided file.                                 */
-/*   - Initializes the FDF structure.                                         */
-/*   - Renders the map using MiniLibX.                                        */
-/*   - Starts the MiniLibX event loop.                                        */
-/*   - Frees allocated memory before exiting.                                 */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../../include/philo.h"
 
 int	main(int argc, char **argv)
 {
-  	s_table	table;
 
-	init_simulation(&table, argc, argv);
-
-	ft_memset(&map, 0, sizeof(t_map));
-	if (!parse_map(argv[1], &map))
-		fatal_error("Error: Failed to parse map");
-	fdf = init_fdf(&map);
-	if (!fdf)
-		parse_error("Error: Failed to initialize FDF", 0, &map);
-	render_fdf(fdf);
-	mlx_loop(fdf->mlx);
-	free_map(&map);
-	free_fdf(fdf);
-	return (0);
 }

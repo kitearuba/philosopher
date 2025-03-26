@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print.c                                            :+:      :+:    :+:   */
+/*   philosopher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,3 +11,17 @@
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
+
+void	philo_routine(void *arg)
+{
+  t_philosopher *philo;
+
+  philo = (t_philosopher *)arg;
+  while (1)
+  {
+    think(philo);
+    eat(philo);
+    sleep_philo(philo);
+  }
+  return (NULL);
+}
