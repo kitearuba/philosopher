@@ -12,6 +12,17 @@
 
 #include "../../include/philo.h"
 
+static void start_simulation(t_table *table) {
+  int i;
+
+  i = 0;
+  while (i < table->num_philosophers) {
+    table->philosophers[i].id = i + 1;
+    table->philosophers[i].last_meal_time = get_time_ms();
+    table->philosophers[i].table = table;
+    pthread_create
+  }
+}
 int	main(int argc, char **argv)
 {
 

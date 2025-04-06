@@ -14,9 +14,9 @@
 
 void	philo_routine(void *arg)
 {
-  t_philosopher *philo;
+  t_philosophers *philo;
 
-  philo = (t_philosopher *)arg;
+  philo = (t_philosophers *)arg;
   while (1)
   {
     think(philo);

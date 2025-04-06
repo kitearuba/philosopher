@@ -34,7 +34,7 @@ typedef	struct	s_philosophers
 		int	 		id;
         pthread_t	thread;
         long		last_meal_time;
-        int			meals_eten;
+        int			meals_eaten;
         t_table		*table;
 }	t_philosophers;
 

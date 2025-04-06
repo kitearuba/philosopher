@@ -39,7 +39,7 @@ int	init_simulation(t_table *table, int argc, char **argv)
         if (parse_args (table, argc, argv))
           	return (1);
 		table->philosophers = malloc(sizeof
-                  (t_philosopher) * table->num_philosophers);
+                  (t_philosophers) * table->num_philosophers);
                 table->forks = malloc(sizeof
                   (pthread_mutex_t) * table->num_philosophers);
                 pthread_mutex_init(&table->print_lock, NULL);
