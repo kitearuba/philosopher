@@ -20,10 +20,19 @@ static void start_simulation(t_table *table) {
     table->philosophers[i].id = i + 1;
     table->philosophers[i].last_meal_time = get_time_ms();
     table->philosophers[i].table = table;
-    pthread_create
+    pthread_create(&table->philosophers[i].thread, NULL, philosopher_routine, &table->philosophers[i]);
+  }
+  i = 0;
+  while (i < table->num_philosophers) {
+    pthread_join(table->philosophers[i].thread, NULL);
   }
 }
-int	main(int argc, char **argv)
-{
 
+int main(int argc, char **argv) {
+  t_table table;
+
+  if (init_simulation(&table, argc, argv))
+    return (1);
+  start_simulation(&table);
+  return (0);
 }
