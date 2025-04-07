@@ -29,18 +29,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/philosopher.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/philo/ft_usleep.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/error_handling/error.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/error_handling/error.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/error_handling/fatal_error.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/error_handling/fatal_error.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/philosopher.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/philosopher.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/routine.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/time.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/time.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
