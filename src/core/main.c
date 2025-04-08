@@ -28,6 +28,7 @@ static void start_simulation(t_table *table) {
     pthread_join(table->philosophers[i].thread, NULL);
 }
 
+
 int main(int argc, char **argv) {
   t_table table;
 

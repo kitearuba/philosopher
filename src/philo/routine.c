@@ -26,7 +26,7 @@ void	*philosopher_routine(void *arg)
 			(&philo->table->forks[philo->id % philo->table->num_philosophers]);
 		print_action(philo, "has taken a fork");
 		print_action(philo, "is eating");
-		philo->last_meal_time = get_time_ms();
+		philo->last_meal_time = get_time_in_ms();
 		ft_usleep(philo->table->time_to_eat);
 		pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
 		pthread_mutex_unlock

@@ -29,14 +29,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/error_handling/fatal_error.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/error_handling/fatal_error.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/philo/ft_usleep.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/ft_usleep.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/philo/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/routine.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/philo/time.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/philo/time.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/print.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/print.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -92,6 +100,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.advertisement.text.has.clang-format": "true",
     "cf.advertisement.text.overridden": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
@@ -128,11 +137,6 @@
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Native Application.all" />
       <item itemvalue="Native Application.fclean" />
@@ -153,6 +157,7 @@
       <workItem from="1743202427868" duration="10847000" />
       <workItem from="1743339821838" duration="1209000" />
       <workItem from="1743372730914" duration="38000" />
+      <workItem from="1744064725192" duration="4450000" />
     </task>
     <servers />
   </component>

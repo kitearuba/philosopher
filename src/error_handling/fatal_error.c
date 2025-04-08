@@ -24,8 +24,7 @@
 /*   - Exits the program with a failure status.                               */
 /*                                                                            */
 /* ************************************************************************** */
-void	fatal_error(const char *msg)
-{
-	ft_printf_fd(STDERR, "%s\n", msg);
-	exit(EXIT_FAILURE);
+void fatal_error(const char *msg) {
+	printf("%s\n", msg);
+	exit(1);
 }

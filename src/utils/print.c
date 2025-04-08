@@ -11,3 +11,13 @@
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
+
+void    print_section(t_philosophers *philo, const char *message)
+{
+      long    timestamp;
+
+      pthread_mutex_lock(&philo->table->print_lock);
+      timestamp = get_time_in_ms() - philo->table->start_time;
+      printf("%ld %d %s\n", timestamp, philo->id, message);
+      pthread_mutex_unlock(&philo->table->print_lock);
+}
