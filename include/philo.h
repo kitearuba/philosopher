@@ -27,6 +27,11 @@
 /*                              Structures                                    */
 /* ************************************************************************** */
 
+// Put this in philo.h or a defines.h file
+# define PM_LOCK(m) pthread_mutex_lock(&(m))
+# define PM_UNLOCK(m) pthread_mutex_unlock(&(m))
+
+
 typedef struct s_table t_table;
 
 typedef struct s_philosophers {
@@ -38,14 +43,17 @@ typedef struct s_philosophers {
 } t_philosophers;
 
 typedef struct s_table {
-  int num_philosophers;
+  int num_philo;
   int time_to_die;
   int time_to_eat;
   int time_to_sleep;
   int num_meals;
   pthread_mutex_t *forks;
   pthread_mutex_t print_lock;
+  pthread_mutex_t death_lock;
+  int someone_died;
   t_philosophers *philosophers;
+  long start_time;
 } t_table;
 
 /* ************************************************************************** */

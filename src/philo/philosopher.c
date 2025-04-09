@@ -17,11 +17,30 @@ void	philo_routine(void *arg)
 	t_philosophers	*philo;
 
 	philo = (t_philosophers *)arg;
-	while (1)
-	{
-		think(philo);
-		eat(philo);
-		sleep_philo(philo);
-	}
-  //return (NULL);
+    while (1)
+    {
+        // 🧠 Step 1: Think
+        print_action(philo, "is thinking");
+
+        // 🍴 Step 2: Take Forks
+        PM_LOCK(philo->table->forks[philo->id - 1]); // Lock left fork
+        print_action(philo, "has taken a fork");
+
+        PM_LOCK(philo->table->forks[philo->id % philo->table->num_philo]); // Lock right fork
+        print_action(philo, "has taken a fork");
+
+        // 🍝 Step 3: Eat
+        print_action(philo, "is eating");
+        philo->last_meal_time = get_time_in_ms(); // Update last meal timestamp
+        ft_usleep(philo->table->time_to_eat);
+
+        // 🔓 Step 4: Release Forks
+        PM_UNLOCK(philo->table->forks[philo->id - 1]); // Unlock left fork
+        PM_UNLOCK(philo->table->forks[philo->id % philo->table->num_philo]); // Unlock right fork
+
+        // 😴 Step 5: Sleep
+        print_action(philo, "is sleeping");
+        ft_usleep(philo->table->time_to_sleep);
+    }
+    //return (NULL);
 }

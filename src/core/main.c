@@ -16,7 +16,7 @@ static void start_simulation(t_table *table) {
   int i;
 
   i = 0;
-  while (i < table->num_philosophers) {
+  while (i < table->num_philo) {
     table->philosophers[i].id = i + 1;
     table->philosophers[i].last_meal_time = get_time_in_ms();
     table->philosophers[i].table = table;
@@ -24,7 +24,7 @@ static void start_simulation(t_table *table) {
                    &table->philosophers[i]);
   }
   i = 0;
-  while (i < table->num_philosophers)
+  while (i < table->num_philo)
     pthread_join(table->philosophers[i].thread, NULL);
 }
 
