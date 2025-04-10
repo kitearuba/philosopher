@@ -31,6 +31,16 @@ static void	*one_philo(t_philosophers *philo)
     return (NULL);
 }
 
+PM_LOCK(philo->table->death_lock);
+	    if (philo->table->someone_died)
+	    {
+		    PM_UNLOCK(philo->table->death_lock);
+		    break; // Exit thread if someone died
+	    }
+	    PM_UNLOCK(philo->table->death_lock);
+		// 🧠 Step 1: Thinking
+		print_action(philo, "is thinking");
+
 void	*philo_routine(void *arg)
 {
 	t_philosophers	*philo;
@@ -40,15 +50,7 @@ void	*philo_routine(void *arg)
           return (one_philo(philo));
 	while (1)
 	{
-          PM_LOCK(philo->table->death_lock);
-	    if (philo->table->someone_died)
-	    {
-		    PM_UNLOCK(philo->table->death_lock);
-		    break; // Exit thread if someone died
-	    }
-	    PM_UNLOCK(philo->table->death_lock);
-		// 🧠 Step 1: Thinking
-		print_action(philo, "is thinking");
+
 
 		// 🍴 Step 2: Taking forks safely (even/odd strategy)
 		if (philo->id % 2 == 0)

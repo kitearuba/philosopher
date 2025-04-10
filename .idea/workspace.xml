@@ -29,19 +29,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/ft_usleep.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/ft_usleep.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/monitor.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/monitor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/philosopher.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/print.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/print.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/philo/time.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/time.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/cleanup.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/cleanup.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,11 +116,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Native Application.all">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="philo" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -170,6 +154,11 @@
     <configuration name="re" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="philo" TARGET_NAME="re" CONFIG_NAME="re" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <list>
@@ -196,6 +185,7 @@
       <workItem from="1744155034537" duration="6931000" />
       <workItem from="1744211649631" duration="9457000" />
       <workItem from="1744240044044" duration="8478000" />
+      <workItem from="1744290858456" duration="1990000" />
     </task>
     <servers />
   </component>
