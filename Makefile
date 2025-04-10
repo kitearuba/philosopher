@@ -18,10 +18,9 @@ NAME 			= philo
 # **************************************************************************** #
 #                            Compiler and Flags                                #
 # **************************************************************************** #
-CC 				= gcc
+CC 				= cc
 CFLAGS			= -Wall -Wextra -Werror -g -fsanitize=address,undefined -O0
 RM				= rm -rf
-MAKE			= make
 
 # **************************************************************************** #
 #                              Directories                                     #
@@ -40,13 +39,13 @@ DEPS 			= $(HEADER) $(MAKEFILE)
 #                               Source File                                    #
 # **************************************************************************** #
 SRC 		:= $(SRC_DIR)/core/main.c \
-               $(SRC_DIR)/parsing/parse_strict_atoi.c \
-               $(SRC_DIR)/error_handling/fatal_error.c \
-               $(SRC_DIR)/utils/free_2d_array.c \
-               $(SRC_DIR)/utils/free_map.c \
-               $(SRC_DIR)/utils/free_fdf.c \
-               $(SRC_DIR)/utils/handle_exit.c \
-               $(SRC_DIR)/utils/find_min_max_z.c \
+               $(SRC_DIR)/init/init.c \
+               $(SRC_DIR)/simulation/ft_usleep.c \
+               $(SRC_DIR)/simulation/monitor.c \
+               $(SRC_DIR)/simulation/print.c \
+               $(SRC_DIR)/simulation/routine.c \
+               $(SRC_DIR)/simulation/time.c \
+               $(SRC_DIR)/utils/cleanup.c \
 
 # Object files
 OBJ			= $(SRC:.c=.o)
@@ -62,21 +61,17 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -I$(INC_DIR) -o $(NAME)
 
-# Rule to rebuild libft.a
-$(LIBFT_A): $(LIBFT_MAKEFILE) $(LIBFT_SRCS) $(LIBFT_H)
-	$(MAKE) -C $(LIBFT_DIR)
-
 # Pattern rule for compiling object files
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
+$%.o: $%.c $(DEPS)
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
-# Clean object files (including bonus objects)
+# Clean object files
 clean:
-	rm -f $(OBJ)
+	$(RM) $(OBJ)
 
-# Full clean including libft.a & fdf executable
+# Full clean
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 # Rebuild everything
 re: fclean all

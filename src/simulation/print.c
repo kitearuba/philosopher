@@ -12,7 +12,7 @@
 
 #include "../../include/philo.h"
 
-void    print_section(t_philosophers *philo, const char *message)
+void    print_action(t_philosophers *philo, const char *message)
 {
       long    timestamp;
 

@@ -36,10 +36,10 @@ typedef struct s_table t_table;
 
 typedef struct s_philosophers {
   int id;
-  pthread_t thread;
-  long last_meal_time;
   int meals_eaten;
-  t_table *table;
+  long last_meal_time;
+  pthread_t thread;
+  struct s_table *table;
 } t_philosophers;
 
 typedef struct s_table {
@@ -47,22 +47,23 @@ typedef struct s_table {
   int time_to_die;
   int time_to_eat;
   int time_to_sleep;
+  int max_meals;
+  int total_fed;
+  int someone_died;
   int num_meals;
+  long start_time;
   pthread_mutex_t *forks;
   pthread_mutex_t print_lock;
   pthread_mutex_t death_lock;
-  int someone_died;
+  pthread_mutex_t fed_lock;
   t_philosophers *philosophers;
-  long start_time;
 } t_table;
 
 /* ************************************************************************** */
-/*                         Initiation & Validation                            */
+/*                                  Utils                                     */
 /* ************************************************************************** */
 
-int init_simulation(t_table *table, int argc, char **argv);
-
-void *philosopher_routine(void *arg);
+void *philo_routine(void *arg);
 
 long get_time_in_ms(void);
 
@@ -70,20 +71,24 @@ void ft_usleep(int milliseconds);
 
 void print_action(t_philosophers *philo, const char *message);
 
-/* ************************************************************************** */
-/*                          Error Handling                                    */
-/* ************************************************************************** */
+void *monitor_death(void *arg);
 
-void fatal_error(const char *msg);
+void cleanup_simulation(t_table *table);
 
 /* ************************************************************************** */
 /*                          Initialization                                    */
 /* ************************************************************************** */
 
-/* ************************************************************************** */
-/*                          Memory Management                                 */
+int init_simulation(t_table *table, int argc, char **argv);
+
 /* ************************************************************************** */
 
-void free_2d_array(char **arr);
+//void free_2d_array(char **arr);
+
+/* ************************************************************************** */
+/*                          Error Handling                                    */
+/* ************************************************************************** */
+
+//void fatal_error(const char *msg);
 
 #endif /* PHILO_H */
