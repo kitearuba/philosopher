@@ -12,59 +12,51 @@
 
 #include "../../include/philo.h"
 
-static int	check_death(t_table *table, int i)
-{
-  	long	time;
+static int check_death(t_table *table, int i) {
+  long time;
 
-  	PM_LOCK(table->death_lock);
-    time = get_time_in_ms() -table->philosophers[i].last_meal_time;
-    if (time > table->time_to_die)
-    {
-          print_action(&table->philosophers[i], "died");
-          table->someone_died = 1;
-          PM_UNLOCK(table->death_lock);
-          return (1);
-    }
+  PM_LOCK(table->death_lock);
+  time = get_time_in_ms() - table->philosophers[i].last_meal_time;
+  if (time > table->time_to_die) {
+    print_action(&table->philosophers[i], "died");
+    table->someone_died = 1;
     PM_UNLOCK(table->death_lock);
-    return (0);
+    return (1);
+  }
+  PM_UNLOCK(table->death_lock);
+  return (0);
 }
 
-static int	check_all_ate(t_table *table)
-{
-  	if (table->max_meals > 0)
-    {
-    		PM_LOCK(table->fed_lock);
-            if (table->total_fed >= table->num_philo)
-            {
-                PM_LOCK(table->death_lock);
-                table->someone_died = 1;
-                PM_UNLOCK(table->death_lock);
-                PM_UNLOCK(table->fed_lock);
-                return (1);
-            }
-            PM_UNLOCK(table->fed_lock);
+static int check_all_ate(t_table *table) {
+  if (table->max_meals > 0) {
+    PM_LOCK(table->fed_lock);
+    if (table->total_fed >= table->num_philo) {
+      PM_LOCK(table->death_lock);
+      table->someone_died = 1;
+      PM_UNLOCK(table->death_lock);
+      PM_UNLOCK(table->fed_lock);
+      return (1);
     }
-    return (0);
+    PM_UNLOCK(table->fed_lock);
+  }
+  return (0);
 }
 
-void    *monitor_death(void *arg)
-{
-      t_table	*table;
-      int		i;
+void *monitor_death(void *arg) {
+  t_table *table;
+  int i;
 
-      table = (t_table *)arg;
-      while (1)
-      {
-              i = 0;
-              while (i < table->num_philo)
-              {
-                    if (check_death(table, i))
-                      return (NULL);
-                    i++;
-              }
-              if (check_all_ate(table))
-                	return (NULL);
-              usleep(1000);
-      }
+  table = (t_table *)arg;
+  while (1) {
+    i = 0;
+    while (i < table->num_philo) {
+      if (check_death(table, i))
+        return (NULL);
+      i++;
+    }
+    if (check_all_ate(table))
       return (NULL);
+    usleep(1000);
+  }
+  return (NULL);
 }

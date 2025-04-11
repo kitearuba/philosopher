@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
     return (1);
   start_simulation(table);
   pthread_create(&monitor, NULL, monitor_death, table);
-  // ⏳ Wait for the monitor to finish (someone died or everyone ate)
+  //  ⏳ Wait for the monitor to finish (someone died or everyone ate)
   pthread_join(monitor, NULL);
-  // Wait for all philosophers to finish
+  //  Wait for all philosophers to finish
   while (i < table->num_philo) {
     pthread_join(table->philosophers[i].thread, NULL);
     i++;

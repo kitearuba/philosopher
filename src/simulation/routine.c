@@ -33,6 +33,14 @@ static int death_check(t_philosophers *philo) {
   if (philo->table->someone_died) {
     PM_UNLOCK(philo->table->death_lock);
     return (1);
+  } else if (philo->table->total_fed >= philo->table->num_philo) {
+    printf("max_meal:  %d\nnum_meals:  %d\n", philo->table->max_meals,
+           philo->table->num_meals);
+    PM_LOCK(philo->table->death_lock);
+    philo->table->someone_died = 1;
+    PM_UNLOCK(philo->table->death_lock);
+    PM_UNLOCK(philo->table->fed_lock);
+    return (1);
   }
   PM_UNLOCK(philo->table->death_lock);
   return (0);
