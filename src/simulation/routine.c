@@ -12,103 +12,126 @@
 
 #include "../../include/philo.h"
 
-static void *one_philo(t_philosophers *philo) {
-  PM_LOCK(philo->table->forks[0]);
-  print_action(philo, "has taken a fork");
-  while (1) {
-    PM_LOCK(philo->table->death_lock);
-    if (philo->table->someone_died) {
-      PM_UNLOCK(philo->table->death_lock);
-      break;
-    }
-    PM_UNLOCK(philo->table->death_lock);
-    usleep(100);
-  }
-  PM_UNLOCK(philo->table->forks[0]);
-  return (NULL);
+static void	*one_philo(t_philosophers *philo)
+{
+	PM_LOCK(philo->table->forks[0]);
+	print_action(philo, "has taken a fork");
+	while (1)
+	{
+		PM_LOCK(philo->table->death_lock);
+		if (philo->table->someone_died)
+		{
+			PM_UNLOCK(philo->table->death_lock);
+			break;
+		}
+		PM_UNLOCK(philo->table->death_lock);
+		usleep(100);
+	}
+	PM_UNLOCK(philo->table->forks[0]);
+	return (NULL);
 }
 
-static int death_check(t_philosophers *philo) {
-  PM_LOCK(philo->table->death_lock);
-  if (philo->table->someone_died) {
-    PM_UNLOCK(philo->table->death_lock);
-    return (1);
-  } else if (philo->table->total_fed >= philo->table->num_philo) {
-    printf("max_meal:  %d\nnum_meals:  %d\n", philo->table->max_meals,
-           philo->table->num_meals);
-    PM_LOCK(philo->table->death_lock);
-    philo->table->someone_died = 1;
-    PM_UNLOCK(philo->table->death_lock);
-    PM_UNLOCK(philo->table->fed_lock);
-    return (1);
-  }
-  PM_UNLOCK(philo->table->death_lock);
-  return (0);
+static void	unlock_forks(t_philosophers *philo)
+{
+	PM_UNLOCK(philo->table->forks[philo->id - 1]);
+	PM_UNLOCK(philo->table->forks[philo->id % philo->table->num_philo]);
 }
 
-static void handle_forking(t_philosophers *philo) {
-  if (philo->id % 2 == 0) {
-    PM_LOCK(philo->table->forks[philo->id % philo->table->num_philo]);
-    if (death_check(philo))
-      return;
-    print_action(philo, "has taken a fork");
-    PM_LOCK(philo->table->forks[philo->id - 1]);
-    if (death_check(philo))
-      return;
-    print_action(philo, "has taken a fork");
-  } else {
-    PM_LOCK(philo->table->forks[philo->id - 1]);
-    if (death_check(philo))
-      return;
-    print_action(philo, "has taken a fork");
-    if (death_check(philo))
-      return;
-    PM_LOCK(philo->table->forks[philo->id % philo->table->num_philo]);
-    if (death_check(philo))
-      return;
-    print_action(philo, "has taken a fork");
-  }
+static int	check_should_exit(t_philosophers *philo)
+{
+	PM_LOCK(philo->table->death_lock);
+	if (philo->table->someone_died)
+	{
+		PM_UNLOCK(philo->table->death_lock);
+		return (1);
+	}
+	PM_UNLOCK(philo->table->death_lock);
+	PM_LOCK(philo->table->fed_lock);
+	if (philo->table->total_fed >= philo->table->num_philo)
+	{
+		PM_LOCK(philo->table->death_lock);
+		philo->table->someone_died = 1;
+		PM_UNLOCK(philo->table->death_lock);
+		PM_UNLOCK(philo->table->fed_lock);
+		return (1);
+	}
+	PM_UNLOCK(philo->table->fed_lock);
+	return (0);
 }
 
-static void do_cycle(t_philosophers *philo) {
-  print_action(philo, "is eating");
-  if (death_check(philo))
-    return;
-  philo->last_meal_time = get_time_in_ms();
-  ft_usleep(philo->table->time_to_eat);
-  philo->meals_eaten++;
-  if (philo->table->max_meals > 0 &&
-      philo->meals_eaten == philo->table->max_meals) {
-    PM_LOCK(philo->table->fed_lock);
-    philo->table->total_fed++;
-    PM_UNLOCK(philo->table->fed_lock);
-    if (death_check(philo))
-      return;
-  }
-  PM_UNLOCK(philo->table->forks[philo->id - 1]);
-  PM_UNLOCK(philo->table->forks[philo->id % philo->table->num_philo]);
-  if (death_check(philo))
-    return;
-  print_action(philo, "is sleeping");
-  ft_usleep(philo->table->time_to_sleep);
+static void	handle_forking(t_philosophers *philo)
+{
+	int left;
+	int right;
+
+	left = philo->id - 1;
+	right = philo->id % philo->table->num_philo;
+	if (philo->id % 2 == 0)
+	{
+		PM_LOCK(philo->table->forks[right]);
+		if (check_should_exit(philo))
+			return (unlock_forks(philo), (void)0);
+		print_action(philo, "has taken a fork");
+		PM_LOCK(philo->table->forks[left]);
+		if (check_should_exit(philo))
+			return (unlock_forks(philo), (void)0);
+		print_action(philo, "has taken a fork");
+	}
+	else
+	{
+		PM_LOCK(philo->table->forks[left]);
+		if (check_should_exit(philo))
+			return (unlock_forks(philo), (void)0);
+		print_action(philo, "has taken a fork");
+		PM_LOCK(philo->table->forks[right]);
+		if (check_should_exit(philo))
+			return (unlock_forks(philo), (void)0);
+		print_action(philo, "has taken a fork");
+	}
 }
 
-void *philo_routine(void *arg) {
-  t_philosophers *philo;
+static void	do_cycle(t_philosophers *philo)
+{
+	if (check_should_exit(philo))
+		return (unlock_forks(philo), (void)0);
+	print_action(philo, "is eating");
+	philo->last_meal_time = get_time_in_ms();
+	ft_usleep(philo->table->time_to_eat);
+	philo->meals_eaten++;
+	if (philo->table->max_meals > 0
+		&& philo->meals_eaten == philo->table->max_meals)
+	{
+		PM_LOCK(philo->table->fed_lock);
+		philo->table->total_fed++;
+		PM_UNLOCK(philo->table->fed_lock);
+	}
+	unlock_forks(philo);
+	if (check_should_exit(philo))
+		return;
+	print_action(philo, "is sleeping");
+	ft_usleep(philo->table->time_to_sleep);
+   	if (check_should_exit(philo))
+		return;
+	print_action(philo, "is thinking");
+}
 
-  philo = (t_philosophers *)arg;
-  // one philo edge case
-  if (philo->table->num_philo == 1)
-    return (one_philo(philo));
-  while (1) {
-    if (death_check(philo))
-      break;
-    handle_forking(philo);
-    if (death_check(philo))
-      break;
-    do_cycle(philo);
-    if (death_check(philo))
-      break;
-  }
-  return (NULL);
+void	*philo_routine(void *arg)
+{
+	t_philosophers	*philo;
+
+	philo = (t_philosophers *)arg;
+	if (philo->table->num_philo == 1)
+		return (one_philo(philo));
+	while (1)
+	{
+		if (check_should_exit(philo))
+			break;
+		handle_forking(philo);
+		if (check_should_exit(philo))
+			break;
+		do_cycle(philo);
+		if (check_should_exit(philo))
+			break;
+	}
+	return (NULL);
 }
