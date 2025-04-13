@@ -3,7 +3,7 @@
 
 ![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C Programming](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square) ![42 Network](https://img.shields.io/badge/42Network-Philo-lightblue?style=flat-square)
 
-**Philosophers** is a concurrency simulation project from the **42 School curriculum**. It challenges students to solve the classic "Dining Philosophers Problem" using **threads**, **mutexes**, and precise **timing**, while strictly adhering to the **42 Norm**.
+**Philosophers** is a concurrency simulation project from the **42 School curriculum**. It challenges students to solve the classic "Dining Philosophers Problem" using **threads**, **mutexes**, and precise **timing**, while strictly adhering to the **42 Norm** and **project constraints**.
 
 ---
 
@@ -19,26 +19,28 @@ The project simulates a group of philosophers sitting at a table who:
 However, they must share forks, and if not synchronized correctly, they can **starve**, cause **deadlocks**, or lead to **data races**. Your job is to prevent that.
 
 This implementation ensures:
-- No philosopher dies unless expected.
-- Simulation ends cleanly.
-- Memory and thread management is 100% safe.
+- No philosopher dies unexpectedly.
+- Simulation ends cleanly when it should.
+- Memory and thread management is leak-free and race-free.
+
+> ⚠️ This project strictly forbids the use of **global variables**.
 
 ---
 
 ## 💡 Features
 
 ### ✅ Mandatory
-- ✉ Multiple philosophers running in parallel
-- 🧒 Fork sharing with mutexes
-- ⏳ Accurate timing for eating, sleeping, and death
-- 📅 Stop simulation when a philosopher dies
-- 📊 Optional argument to stop after `N` meals per philosopher
-- 💪 No data races or undefined behavior
+- ✉ Multiple philosophers running in parallel (via `pthread_create`)
+- 🧒 Fork sharing protected by `pthread_mutex`
+- ⏳ Accurate timing using `gettimeofday()` and custom usleep
+- 📅 Simulation ends if a philosopher dies or if all eat `N` times
+- 📊 Clean logging format: timestamps and philosopher ID
+- 💪 No memory leaks or race conditions (validated by Valgrind & ASan)
 
 ### ✨ Bonus (Optional)
-- Handling 1000+ philosophers efficiently
-- Logging toggles for performance testing
-- Custom test script with delays between tests
+- Handles thousands of philosophers without freezing
+- Toggle logging to test performance with minimal output
+- Stress testing via custom test scripts
 
 ---
 
@@ -68,7 +70,9 @@ cd philo
 make
 ```
 
-This builds the `philo` executable using `-pthread` and flags suitable for 42 evaluation.
+This builds the `philo` executable using `-pthread` and flags required by 42:
+- `-Wall -Wextra -Werror`
+- Makefile targets: `all`, `clean`, `fclean`, `re`
 
 ---
 
@@ -84,14 +88,17 @@ This builds the `philo` executable using `-pthread` and flags suitable for 42 ev
 ```
 > 5 philosophers, die if not eaten in 800ms, eat for 200ms, sleep for 200ms, simulation stops after each eats 7 times.
 
-### Output:
+### Log Output:
 ```
-112 1 has taken a fork
+113 1 has taken a fork
 113 1 has taken a fork
 113 1 is eating
 ...
 800 3 died
 ```
+> All logs follow this strict format: `timestamp_in_ms philosopher_number action`
+
+> ⚠️ Important: The program must log a death within **10ms** of its occurrence.
 
 ---
 
@@ -133,8 +140,8 @@ This builds the `philo` executable using `-pthread` and flags suitable for 42 ev
 ## 🙌 Acknowledgments
 
 - Thanks to **42 School** for this mind-bending project.
-- Cheers to **everyone struggling with deadlocks and timing bugs** — you’re not alone!
-- Gratitude to **Valgrind** and **AddressSanitizer** for saving our brains.
+- Cheers to **everyone debugging timing bugs at 2AM** — you're not alone!
+- Shoutout to **Valgrind** and **AddressSanitizer** for keeping it clean.
 
 ---
 
