@@ -81,6 +81,12 @@ int	init_simulation(t_table *table, int argc, char **argv)
 	pthread_mutex_init(&table->fed_lock, NULL);
 	table->someone_died = 0;
 	table->total_fed = 0;
+    table->simulation_ended = 0;
+    if (pthread_mutex_init(&table->simulation_lock, NULL) != 0)
+    {
+    	printf("Error: simulation_lock init failed\n");
+    	return (1);
+    }
 	while (i < table->num_philo)
 		pthread_mutex_init(&table->forks[i++], NULL);
 	return (0);

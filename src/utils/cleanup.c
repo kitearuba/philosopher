@@ -25,7 +25,9 @@ void    cleanup_simulation(t_table *table)
       }
       // Destroy other shared mutexes
       pthread_mutex_destroy(&table->print_lock);
+      pthread_mutex_destroy(&table->fed_lock);
       pthread_mutex_destroy(&table->death_lock);
+      pthread_mutex_destroy(&table->simulation_lock);
       free(table->forks);
       free(table->philosophers);
 }
