@@ -28,26 +28,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test42.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LazyPhilosophersTester-main/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/LazyPhilosophersTester-main/test.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/philo" beforeDir="false" afterPath="$PROJECT_DIR$/philo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init/init.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/ft_usleep.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/ft_usleep.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/monitor.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/monitor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/monitor.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/monitor.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/print.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/print.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/print.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/print.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/routine.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/cleanup.o" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/cleanup.o" afterDir="false" />
-    </list>
+    <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -194,7 +175,7 @@
       <workItem from="1744290858456" duration="1990000" />
       <workItem from="1744388349368" duration="4488000" />
       <workItem from="1744395781622" duration="7505000" />
-      <workItem from="1744498224459" duration="15493000" />
+      <workItem from="1744498224459" duration="16227000" />
     </task>
     <servers />
   </component>
