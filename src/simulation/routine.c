@@ -107,7 +107,8 @@ static void	do_cycle(t_philosophers *philo)
 		&& philo->meals_eaten == philo->table->max_meals)
 	{
 		PM_LOCK(philo->table->fed_lock);
-		philo->table->total_fed++;
+		if (philo->meals_eaten == philo->table->max_meals)
+			philo->table->total_fed++;
 		PM_UNLOCK(philo->table->fed_lock);
 	}
 	unlock_forks(philo);

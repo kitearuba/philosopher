@@ -16,57 +16,53 @@ PASS=0
 FAIL=0
 TESTS=0
 
-# checks params. If none given, assumes philo executable is in same directory as tester directory.
+# Check params
 if [ "$#" -gt 1 ]; then
 	printf "Too many parameters. Please only provide path to philo executable.\n"
 	exit
-elif [ "$#"  -lt 1 ]; then
+elif [ "$#" -lt 1 ]; then
 	set $1 ../philo
 fi
 
-# checks if given executable path and file is valid.
+# Check if executable is valid
 if [ ! -f "$1" ]; then
 	printf "$1 not found or invalid file. Please (re)make philo executable first.\n"
 	exit
 fi
 
-PROGRESS_BAR_WIDTH=50  # progress bar length in characters
+PROGRESS_BAR_WIDTH=50
 
 draw_progress_bar() {
-  # Arguments: current value, max value, unit of measurement (optional)
-  local __value=$1
-  local __max=$2
-  local __unit=${3:-""}	# if unit is not supplied, do not display it
+	local __value=$1
+	local __max=$2
+	local __unit=${3:-""}
+	if (( $__max < 1 )); then __max=1; fi
+	local __percentage=$(( 100 - ($__max*100 - $__value*100) / $__max ))
+	local __num_bar=$(( $__percentage * $PROGRESS_BAR_WIDTH / 100 ))
 
-  # Calculate percentage
-  if (( $__max < 1 )); then __max=1; fi # anti zero division protection
-  local __percentage=$(( 100 - ($__max*100 - $__value*100) / $__max ))
-
-  # Rescale the bar according to the progress bar width
-  local __num_bar=$(( $__percentage * $PROGRESS_BAR_WIDTH / 100 ))
-
-  # Draw progress bar
-  printf "["
-  for b in $(seq 1 $__num_bar); do printf "#"; done
-  for s in $(seq 1 $(( $PROGRESS_BAR_WIDTH - $__num_bar ))); do printf " "; done
-  printf "] $__percentage%% ($__value / $__max $__unit)\r"
+	printf "["
+	for b in $(seq 1 $__num_bar); do printf "#"; done
+	for s in $(seq 1 $(( $PROGRESS_BAR_WIDTH - $__num_bar ))); do printf " "; done
+	printf "] $__percentage%% ($__value / $__max $__unit)\r"
 }
 
 die_test () {
 	printf "\n${CYAN}=== Starting tests where program should end with death or enough eaten ===\n${RESET}"
-	while IFS="" read -r -u 3 input || [ -n "$input" ]	# read input from fd 3
-	do
-		read -r -u 3 result	# read desired result description from input.txt
-		printf "\nTest: ${BLUEBG}${WHITE}[$input]${RESET} | ${PURP}$result${RESET}\n\n"	
-		read -rs -n 1 -p $'Press ENTER to start test, press any other key to exit tester...\n' key  # read from stdin, accepting only 1 char
+	while IFS="" read -r -u 3 input || [ -n "$input" ]; do
+		read -r -u 3 result
+		printf "\nTest: ${BLUEBG}${WHITE}[$input]${RESET} | ${PURP}$result${RESET}\n\n"
+		read -rs -n 1 -p $'Press ENTER to start test, press any other key to exit tester...\n' key
 		if [[ $key == "" ]] ; then
 			printf "\n"
-			$1 $input	# run ./philo with test case input
+			$1 $input & wait
+			pkill -f "$1" > /dev/null 2>&1
+			sleep 0.5
+			printf "\n${CYAN}--- End of test ---${RESET}\n"
 		else
 			exit 0
 		fi
-	done 3< ./yes-die.txt   # open file is assigned fd 3
-	exec 3<&-	# close fd 3
+	done 3< ./yes-die.txt
+	exec 3<&-
 }
 
 no_die_test () {
@@ -76,21 +72,20 @@ no_die_test () {
 	if [[ $timeout != *[[:digit:]]* ]]; then
 		timeout=10
 	fi
-	while IFS="" read -r -u 3 input || [ -n "$input" ] # read input from fd 3
-	do
-		read -r -u 3 result    # read desired result description from input.txt
+	while IFS="" read -r -u 3 input || [ -n "$input" ]; do
+		read -r -u 3 result
 		printf "\nTest: ${BLUEBG}${WHITE}[$input]${RESET} | ${PURP}$result${RESET}\n\n"
-		read -rs -n 1 -p $'Press ENTER to start test, press any other key to exit tester...\n' key   # read from stdin, accepting only 1 char
+		read -rs -n 1 -p $'Press ENTER to start test, press any other key to exit tester...\n' key
 		if [[ $key == "" ]] ; then
 			printf "\n"
-			./PhilosophersChecker.py "$1 $input" $timeout > /dev/null & pid=$!   # silence checker output and run in bg
+			./PhilosophersChecker.py "$1 $input" $timeout > /dev/null & pid=$!
 			local elapsed=0
-			while ps -p $pid &>/dev/null; do    # check if checker script still running
-				draw_progress_bar $elapsed $timeout "seconds" # TODO: fix extra space at end of progress bar, extra )
+			while ps -p $pid &>/dev/null; do
+				draw_progress_bar $elapsed $timeout "seconds"
 				if [[ $elapsed == $timeout ]]; then
 					printf "\n\n${GREEN}OK${RESET}\n"
 					(( PASS++ ))
-					break;
+					break
 				fi
 				(( elapsed++ ))
 				sleep 1
@@ -101,28 +96,32 @@ no_die_test () {
 				printf "\n\n${RED}KO${RESET} - program terminated prematurely\n"
 				(( FAIL++ ))
 			fi
+			sleep 0.5
+			pkill -f "$1" > /dev/null 2>&1
+			printf "\n${CYAN}--- End of test ---${RESET}\n"
 		else
 			printf "\n${GREEN}PASSED${RESET}: $PASS/$TESTS | ${RED}FAILED${RESET}: $FAIL/$TESTS\n"
 			exit 0
 		fi
 		(( TESTS++ ))
-	done 3< ./no-die.txt   # open file is assigned fd 3
+	done 3< ./no-die.txt
 	printf "\nNo-Die Tests: ${GREEN}PASSED${RESET}: $PASS/$TESTS | ${RED}FAILED${RESET}: $FAIL/$TESTS\n"
-	exec 3<&-	# close fd 3
+	exec 3<&-
 }
 
 choose_test() {
-    read -rn1 -p $'\nChoose test to run:\n\t[0] all tests\n\t[1] die tests\n\t[2] no-die tests (can take a while)\n\t[ESC] exit tester\n\n' choice
-    printf "\n"
-    case $choice in
-        0) die_test "$1" && no_die_test "$1" ;;
-        1) die_test "$1" ;;
-        2) no_die_test "$1" ;;
-        $'\e') exit 0 ;;
-        *) printf "${RED}Invalid choice\n${RESET}"; choose_test "$1" ;;
-    esac
+	read -rn1 -p $'\nChoose test to run:\n\t[0] all tests\n\t[1] die tests\n\t[2] no-die tests (can take a while)\n\t[ESC] exit tester\n\n' choice
+	printf "\n"
+	case $choice in
+		0) die_test "$1" && no_die_test "$1" ;;
+		1) die_test "$1" ;;
+		2) no_die_test "$1" ;;
+		$'\e') exit 0 ;;
+		*) printf "${RED}Invalid choice\n${RESET}"; choose_test "$1" ;;
+	esac
 }
 
+# Intro
 printf "${BOLD}\n💭 The Lazy Philosophers Tester 💭\n${RESET}"
 printf "\nThis tester allows you to test:\n\n"
 printf "\t1. when your program should stop on death or when all philos have eaten enough\n"

@@ -30,6 +30,13 @@
 // Put this in philo.h or a defines.h file
 # define PM_LOCK(m) pthread_mutex_lock(&(m))
 # define PM_UNLOCK(m) pthread_mutex_unlock(&(m))
+# define RESET  "\033[0m"
+# define RED    "\033[31m"
+# define GREEN  "\033[32m"
+# define YELLOW "\033[33m"
+# define BLUE   "\033[34m"
+# define CYAN   "\033[36m"
+# define PHILO_PRINT_CAP 100
 
 
 typedef struct s_table t_table;
@@ -52,6 +59,7 @@ typedef struct s_table {
   int someone_died;
   int num_meals;
   int				simulation_ended;
+  int log_colored;
   long start_time;
   pthread_mutex_t *forks;
   pthread_mutex_t print_lock;
@@ -72,6 +80,7 @@ long get_time_in_ms(void);
 void ft_usleep(int milliseconds);
 
 void print_action(t_philosophers *philo, const char *message);
+void	print_meal_summary(t_table *table);
 
 void *monitor_death(void *arg);
 

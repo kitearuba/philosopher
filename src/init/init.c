@@ -48,15 +48,18 @@ static int	parse_args(t_table *table, int argc, char **argv)
 	table->time_to_die = safe_atoi(argv[2], &error);
 	table->time_to_eat = safe_atoi(argv[3], &error);
 	table->time_to_sleep = safe_atoi(argv[4], &error);
+    table->log_colored = 1;
+	if (table->num_philo > 50)
+		table->log_colored = 0;
 	if (argc == 6)
-		table->num_meals = safe_atoi(argv[5], &error);
+		table->max_meals = safe_atoi(argv[5], &error);
 	else
-		table->num_meals = -1;
+		table->max_meals = -1;
 	if (error || table->num_philo < 1 || table->time_to_die < 1
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
-		|| (argc == 6 && table->num_meals < 1))
+		|| (argc == 6 && table->max_meals < 1))
     {
-          printf("Error: wrong number of args\n");
+          printf("Error: wrong input\n");
           return (1);
     }
 	return (0);
@@ -75,7 +78,15 @@ int	init_simulation(t_table *table, int argc, char **argv)
     }
 	table->philosophers = malloc
 		(sizeof(t_philosophers) * table->num_philo);
+    if (!table->philosophers)
+		return (printf("Error: malloc failed\n"), 1);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
+    if (!table->forks)
+    {
+    	free(table->philosophers); // prevent leak
+    	return (printf("Error: malloc failed\n"), 1);
+    }
+
 	pthread_mutex_init(&table->print_lock, NULL);
     pthread_mutex_init(&table->death_lock, NULL);
 	pthread_mutex_init(&table->fed_lock, NULL);
@@ -89,5 +100,14 @@ int	init_simulation(t_table *table, int argc, char **argv)
     }
 	while (i < table->num_philo)
 		pthread_mutex_init(&table->forks[i++], NULL);
+    i = 0;
+    while (i < table->num_philo)
+    {
+    	table->philosophers[i].id = i + 1;
+    	table->philosophers[i].meals_eaten = 0;
+    	table->philosophers[i].last_meal_time = 0;
+    	table->philosophers[i].table = table;
+    	i++;
+    }
 	return (0);
 }

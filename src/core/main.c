@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
     pthread_join(table->philosophers[i].thread, NULL);
     i++;
   }
+  if (table->num_philo < 20)
+    print_meal_summary(table);
   cleanup_simulation(table);
   free(table);
   return (0);

@@ -45,6 +45,7 @@ SRC 		:= $(SRC_DIR)/core/main.c \
                $(SRC_DIR)/simulation/print.c \
                $(SRC_DIR)/simulation/routine.c \
                $(SRC_DIR)/simulation/time.c \
+               $(SRC_DIR)/simulation/simulation_end.c \
                $(SRC_DIR)/utils/cleanup.c \
 
 # Object files
