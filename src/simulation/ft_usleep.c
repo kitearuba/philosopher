@@ -10,13 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../include/philo.h"
+#include "../../include/philo.h"
 
-void    ft_usleep(int milliseconds)
+/**
+ * @brief Sleeps for a given amount of time in milliseconds.
+ *
+ * A wrapper around usleep that checks elapsed time in a loop,
+ * ensuring more precise timing than a single usleep call.
+ *
+ * @param milliseconds Time to sleep in milliseconds.
+ */
+void	ft_usleep(int milliseconds)
 {
-      long    start_time;
+  long	start_time;
 
-      start_time = get_time_in_ms();
-      while((get_time_in_ms() -start_time) < milliseconds)
-            usleep(500);
+  start_time = get_time_in_ms();
+  while ((get_time_in_ms() - start_time) < milliseconds)
+    usleep(500);
 }

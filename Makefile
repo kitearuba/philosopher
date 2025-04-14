@@ -40,6 +40,7 @@ DEPS 			= $(HEADER) $(MAKEFILE)
 # **************************************************************************** #
 SRC 		:= $(SRC_DIR)/core/main.c \
                $(SRC_DIR)/init/init.c \
+               $(SRC_DIR)/init/safe_atoi.c \
                $(SRC_DIR)/simulation/ft_usleep.c \
                $(SRC_DIR)/simulation/monitor.c \
                $(SRC_DIR)/simulation/print.c \

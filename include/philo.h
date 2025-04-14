@@ -93,6 +93,7 @@ void	set_simulation_end(t_table *table);
 /* ************************************************************************** */
 
 int init_simulation(t_table *table, int argc, char **argv);
+int	safe_atoi(const char *str, int *error);
 
 /* ************************************************************************** */
 
