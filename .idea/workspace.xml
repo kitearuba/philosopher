@@ -28,20 +28,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_philo.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/val" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/philo" beforeDir="false" afterPath="$PROJECT_DIR$/philo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/monitor.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/monitor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/cleanup.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/cleanup.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/test.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test42.sh" beforeDir="false" afterPath="$PROJECT_DIR$/test42.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/norm-2.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/philo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test42.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_philo.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/val" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -254,7 +248,7 @@
       <workItem from="1745050560522" duration="602000" />
       <workItem from="1745053670328" duration="2997000" />
       <workItem from="1745092412653" duration="2390000" />
-      <workItem from="1745192022733" duration="1570000" />
+      <workItem from="1745192022733" duration="5285000" />
     </task>
     <servers />
   </component>
