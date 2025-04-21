@@ -24,16 +24,15 @@
  */
 static int	check_death(t_table *table, int i)
 {
-	long	time;
+  long time;
 
-	time = get_time_in_ms() - table->philosophers[i].last_meal_time;
-	if (time > table->time_to_die)
-	{
-		print_action(&table->philosophers[i], "died");
-		set_simulation_end(table);
-		return (1);
-	}
-	return (0);
+  time = get_time_in_ms() - table->philosophers[i].last_meal_time;
+  if (time > table->time_to_die) {
+    print_action(&table->philosophers[i], "died");
+    set_simulation_end(table);
+    return (1);
+  }
+  return (0);
 }
 
 /**

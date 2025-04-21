@@ -147,5 +147,6 @@ int	init_simulation(t_table *table, int argc, char **argv)
 	table->total_fed = 0;
 	table->simulation_ended = 0;
 	init_philosopher_data(table);
+        pthread_mutex_init(&table->death_print_lock, NULL);
 	return (0);
 }
