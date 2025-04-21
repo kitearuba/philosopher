@@ -6,30 +6,11 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/07 22:56:05 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/21 22:47:39 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
-
-/**
- * @brief Routine for when only one philosopher exists.
- *
- * Locks the only fork and waits in a loop until the simulation ends,
- * simulating the edge case where the philosopher can never eat.
- *
- * @param philo Pointer to the philosopher structure.
- * @return NULL.
- */
-static void	*one_philo(t_philosophers *philo)
-{
-	PM_LOCK(philo->table->forks[0]);
-	print_action(philo, "has taken a fork");
-	while (!is_simulation_ended(philo->table))
-		usleep(100);
-	PM_UNLOCK(philo->table->forks[0]);
-	return (NULL);
-}
 
 /**
  * @brief Unlocks both forks held by the philosopher.
@@ -42,6 +23,15 @@ static void	unlock_forks(t_philosophers *philo)
 {
 	PM_UNLOCK(philo->table->forks[philo->id - 1]);
 	PM_UNLOCK(philo->table->forks[philo->id % philo->table->num_philo]);
+}
+
+static void	lock_fork(t_philosophers *philo, int fork_index)
+{
+	pthread_mutex_lock(&philo->table->forks[fork_index]);
+	if (is_simulation_ended(philo->table))
+		unlock_forks(philo);
+	else
+		print_action(philo, "has taken a fork");
 }
 
 /**
@@ -61,25 +51,15 @@ static void	handle_forking(t_philosophers *philo)
 	right = philo->id % philo->table->num_philo;
 	if (philo->id % 2 == 0)
 	{
-		PM_LOCK(philo->table->forks[right]);
+		lock_fork(philo, right);
 		if (is_simulation_ended(philo->table))
-			return (unlock_forks(philo), (void)0);
-		print_action(philo, "has taken a fork");
-		PM_LOCK(philo->table->forks[left]);
-		if (is_simulation_ended(philo->table))
-			return (unlock_forks(philo), (void)0);
-		print_action(philo, "has taken a fork");
+			lock_fork(philo, left);
 	}
 	else
 	{
-		PM_LOCK(philo->table->forks[left]);
+		lock_fork(philo, left);
 		if (is_simulation_ended(philo->table))
-			return (unlock_forks(philo), (void)0);
-		print_action(philo, "has taken a fork");
-		PM_LOCK(philo->table->forks[right]);
-		if (is_simulation_ended(philo->table))
-			return (unlock_forks(philo), (void)0);
-		print_action(philo, "has taken a fork");
+			lock_fork(philo, right);
 	}
 }
 
@@ -121,7 +101,7 @@ static void	do_cycle(t_philosophers *philo)
  * @brief Main thread routine for each philosopher.
  *
  * Alternates between acquiring forks, eating, sleeping, and thinking
- * until the simulation ends. Handles the one-philosopher case separately.
+ * until the simulation ends. Handles the one-philosopher case.
  *
  * @param arg Pointer to the philosopher structure (cast from void*).
  * @return NULL.
@@ -132,7 +112,14 @@ void	*philo_routine(void *arg)
 
 	philo = (t_philosophers *)arg;
 	if (philo->table->num_philo == 1)
-		return (one_philo(philo));
+	{
+		PM_LOCK(philo->table->forks[0]);
+		print_action(philo, "has taken a fork");
+		while (!is_simulation_ended(philo->table))
+			usleep(100);
+		PM_UNLOCK(philo->table->forks[0]);
+		return (NULL);
+	}
 	while (!is_simulation_ended(philo->table))
 	{
 		handle_forking(philo);

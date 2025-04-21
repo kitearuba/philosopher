@@ -18,16 +18,14 @@
  * @param s2 Second string.
  * @return Difference between first unmatched characters, or 0 if equal.
  */
-static int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s2)
-	{
-		if (*s1 != *s2)
-			return ((unsigned char)*s1 - (unsigned char)*s2);
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
+static int ft_strcmp(const char *s1, const char *s2) {
+    while (*s1 && *s2) {
+        if (*s1 != *s2)
+            return ((unsigned char) *s1 - (unsigned char) *s2);
+        s1++;
+        s2++;
+    }
+    return ((unsigned char) *s1 - (unsigned char) *s2);
 }
 
 /**
@@ -39,31 +37,29 @@ static int	ft_strcmp(const char *s1, const char *s2)
  * @param philo Pointer to the philosopher struct.
  * @param message Action message (e.g., "is eating", "died", etc.).
  */
-void	print_action(t_philosophers *philo, const char *message)
-{
-	long			timestamp;
-	const char		*color;
+void print_action(t_philosophers *philo, const char *message) {
+    long timestamp;
+    const char *color;
 
-	if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
-		return ;
-	color = RESET;
-	if (!ft_strcmp(message, "is eating"))
-		color = GREEN;
-	else if (!ft_strcmp(message, "is sleeping"))
-		color = CYAN;
-	else if (!ft_strcmp(message, "is thinking"))
-		color = BLUE;
-	else if (!ft_strcmp(message, "died"))
-		color = RED;
-	PM_LOCK(philo->table->print_lock);
-	timestamp = get_time_in_ms() - philo->table->start_time;
-	if (philo->table->log_colored)
-		printf("%ld %s%d%s %s%s%s\n", timestamp,
-			YELLOW, philo->id, RESET,
-			color, message, RESET);
-	else
-		printf("%ld %d %s\n", timestamp, philo->id, message);
-	PM_UNLOCK(philo->table->print_lock);
+    if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
+        return;
+    color = RESET;
+    if (!ft_strcmp(message, "is eating"))
+        color = GREEN;
+    else if (!ft_strcmp(message, "is sleeping"))
+        color = CYAN;
+    else if (!ft_strcmp(message, "is thinking"))
+        color = BLUE;
+    else if (!ft_strcmp(message, "died"))
+        color = RED;
+    pthread_mutex_lock(&philo->table->print_lock);
+    timestamp = get_time_in_ms() - philo->table->start_time;
+    if (philo->table->log_colored)
+        printf("%ld %s%d%s %s%s%s\n", timestamp, YELLOW, philo->id, RESET, color,
+               message, RESET);
+    else
+        printf("%ld %d %s\n", timestamp, philo->id, message);
+    pthread_mutex_unlock(&philo->table->print_lock);
 }
 
 /**
@@ -73,21 +69,18 @@ void	print_action(t_philosophers *philo, const char *message)
  *
  * @param table Pointer to the simulation table.
  */
-void	print_meal_summary(t_table *table)
-{
-	int	i;
+void print_meal_summary(t_table *table) {
+    int i;
 
-	i = 0;
-	printf("\nSimulation ended. Meal summary:\n");
-	while (i < table->num_philo)
-	{
-		printf("Philosopher %d ate %d ",
-			table->philosophers[i].id,
-			table->philosophers[i].meals_eaten);
-		if (table->philosophers[i].meals_eaten == 1)
-			printf("time\n");
-		else
-			printf("times\n");
-		i++;
-	}
+    i = 0;
+    printf("\nSimulation ended. Meal summary:\n");
+    while (i < table->num_philo) {
+        printf("Philosopher %d ate %d ", table->philosophers[i].id,
+               table->philosophers[i].meals_eaten);
+        if (table->philosophers[i].meals_eaten == 1)
+            printf("time\n");
+        else
+            printf("times\n");
+        i++;
+    }
 }

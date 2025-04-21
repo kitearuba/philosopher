@@ -6,10 +6,14 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/07 23:11:51 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/21 21:49:06 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/*
+ * # define PM_LOCK(m) pthread_mutex_lock(&(m))
+ * # define PM_UNLOCK(m) pthread_mutex_unlock(&(m))
+ */
 #ifndef PHILO_H
 #define PHILO_H
 
@@ -24,20 +28,20 @@
 #include <unistd.h>
 
 /* ************************************************************************** */
-/*                              Structures                                    */
+/*                              Constants and Colors                          */
 /* ************************************************************************** */
 
-// Put this in philo.h or a defines.h file
-# define PM_LOCK(m) pthread_mutex_lock(&(m))
-# define PM_UNLOCK(m) pthread_mutex_unlock(&(m))
-# define RESET  "\033[0m"
-# define RED    "\033[31m"
-# define GREEN  "\033[32m"
-# define YELLOW "\033[33m"
-# define BLUE   "\033[34m"
-# define CYAN   "\033[36m"
-# define PHILO_PRINT_CAP 100
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define CYAN "\033[36m"
+#define PHILO_PRINT_CAP 100
 
+/* ************************************************************************** */
+/*                              Structures                                    */
+/* ************************************************************************** */
 
 typedef struct s_table t_table;
 
@@ -46,7 +50,7 @@ typedef struct s_philosophers {
   int meals_eaten;
   long last_meal_time;
   pthread_t thread;
-  struct s_table *table;
+  t_table *table;
 } t_philosophers;
 
 typedef struct s_table {
@@ -58,7 +62,7 @@ typedef struct s_table {
   int total_fed;
   int someone_died;
   int num_meals;
-  int				simulation_ended;
+  int simulation_ended;
   int log_colored;
   long start_time;
   pthread_mutex_t *forks;
@@ -66,7 +70,7 @@ typedef struct s_table {
   pthread_mutex_t death_lock;
   pthread_mutex_t death_print_lock;
   pthread_mutex_t fed_lock;
-  pthread_mutex_t	simulation_lock;
+  pthread_mutex_t simulation_lock;
   t_philosophers *philosophers;
 } t_table;
 
@@ -75,35 +79,20 @@ typedef struct s_table {
 /* ************************************************************************** */
 
 void *philo_routine(void *arg);
-
 long get_time_in_ms(void);
-
 void ft_usleep(int milliseconds);
-
 void print_action(t_philosophers *philo, const char *message);
-void	print_meal_summary(t_table *table);
-
+void print_meal_summary(t_table *table);
 void *monitor_death(void *arg);
-
 void cleanup_simulation(t_table *table);
-int	is_simulation_ended(t_table *table);
-void	set_simulation_end(t_table *table);
+int is_simulation_ended(t_table *table);
+void set_simulation_end(t_table *table);
 
 /* ************************************************************************** */
-/*                          Initialization                                    */
+/*                               Initialization                               */
 /* ************************************************************************** */
 
 int init_simulation(t_table *table, int argc, char **argv);
-int	safe_atoi(const char *str, int *error);
-
-/* ************************************************************************** */
-
-//void free_2d_array(char **arr);
-
-/* ************************************************************************** */
-/*                          Error Handling                                    */
-/* ************************************************************************** */
-
-//void fatal_error(const char *msg);
+int safe_atoi(const char *str, int *error);
 
 #endif /* PHILO_H */

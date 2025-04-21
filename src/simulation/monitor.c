@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/09 22:52:30 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/21 22:01:21 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,16 @@
  */
 static int	check_death(t_table *table, int i)
 {
-  long time;
+	long	time;
 
-  time = get_time_in_ms() - table->philosophers[i].last_meal_time;
-  if (time > table->time_to_die) {
-    print_action(&table->philosophers[i], "died");
-    set_simulation_end(table);
-    return (1);
-  }
-  return (0);
+	time = get_time_in_ms() - table->philosophers[i].last_meal_time;
+	if (time > table->time_to_die)
+	{
+		print_action(&table->philosophers[i], "died");
+		set_simulation_end(table);
+		return (1);
+	}
+	return (0);
 }
 
 /**

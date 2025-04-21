@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/07 23:03:30 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/21 21:56:53 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../../include/philo.h"
@@ -147,6 +147,6 @@ int	init_simulation(t_table *table, int argc, char **argv)
 	table->total_fed = 0;
 	table->simulation_ended = 0;
 	init_philosopher_data(table);
-        pthread_mutex_init(&table->death_print_lock, NULL);
+	pthread_mutex_init(&table->death_print_lock, NULL);
 	return (0);
 }

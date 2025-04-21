@@ -5,19 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/08 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/07 23:07:49 by chrrodri         ###   ########.fr       */
+/*   Created: 2025/02/15 11:21:01 by chrrodri          #+#    #+#             */
+/*   Updated: 2025/04/21 21:54:04 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
 
 /**
- * @brief Initializes and starts the simulation by creating a thread for each philosopher.
+ * @brief Initializes and starts the simulation by creating a thread for each 
+ * philosopher.
  *
- * This function sets the simulation's start time and initializes each philosopher's
- * ID, last meal time, and pointer to the shared table. It then creates a thread
- * for each philosopher to run their routine concurrently.
+ * This function sets the simulation's start time and initializes each 
+ * philosopher's ID, last meal time, and pointer to the shared table. It then 
+ * creates a thread for each philosopher to run their routine concurrently.
  *
  * @param table Pointer to the simulation's table structure.
  */

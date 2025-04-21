@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/02/20 19:39:58 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/21 22:05:19 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	cleanup_simulation(t_table *table)
 		pthread_mutex_destroy(&table->forks[i]);
 		i++;
 	}
-    pthread_mutex_destroy(&table->death_print_lock);
+	pthread_mutex_destroy(&table->death_print_lock);
 	pthread_mutex_destroy(&table->print_lock);
 	pthread_mutex_destroy(&table->fed_lock);
 	pthread_mutex_destroy(&table->death_lock);
