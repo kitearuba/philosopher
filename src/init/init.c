@@ -42,7 +42,7 @@ static int	parse_args(t_table *table, int argc, char **argv)
 		table->max_meals = -1;
 	if (error || table->num_philo < 1 || table->time_to_die < 1
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
-		|| (argc == 6 && table->max_meals < 1))
+		|| (argc == 6 && table->max_meals < 0))
 	{
 		printf("Error: wrong input\n");
 		return (1);

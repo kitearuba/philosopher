@@ -65,6 +65,13 @@ int	main(int argc, char **argv)
 	i = 0;
 	if (init_simulation(table, argc, argv))
 		return (1);
+        if (table->max_meals == 0)
+        {
+          print_meal_summary(table);
+          cleanup_simulation(table);
+          free(table);
+          return (0);
+        }
 	start_simulation(table);
 	pthread_create(&monitor, NULL, monitor_death, table);
 	pthread_join(monitor, NULL);
