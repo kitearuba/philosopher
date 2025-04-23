@@ -64,7 +64,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -I$(INC_DIR) -o $(NAME)
 
 # Pattern rule for compiling object files
-$%.o: $%.c $(DEPS)
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
 # Clean object files
