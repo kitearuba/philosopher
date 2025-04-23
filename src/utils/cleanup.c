@@ -25,6 +25,8 @@ void	cleanup_simulation(t_table *table)
 	int	i;
 
 	i = 0;
+        if (table->num_philo < 20)
+                print_meal_summary(table);
 	while (i < table->num_philo)
 	{
 		pthread_mutex_destroy(&table->forks[i]);
