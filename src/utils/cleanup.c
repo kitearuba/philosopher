@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 22:05:19 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/24 18:09:17 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void	cleanup_simulation(t_table *table)
 	int	i;
 
 	i = 0;
-        if (table->num_philo < 20)
-                print_meal_summary(table);
+	if (table->num_philo < 20)
+		print_meal_summary(table);
 	while (i < table->num_philo)
 	{
 		pthread_mutex_destroy(&table->forks[i]);

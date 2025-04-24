@@ -6,21 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 11:21:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 21:54:04 by chrrodri         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../include/philo.h"
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/15 11:21:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 21:54:04 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/04/24 18:08:16 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +44,7 @@ static void	start_simulation(t_table *table)
 /**
  * @brief Handles simulation cleanup and exit.
  *
- * Cleans up memory, prints meal summary (if enabled), and exits with a given code.
+ * Cleans up memory, prints meal summary(if enabled), &  exits with a given code.
  *
  * @param table Pointer to the simulation table.
  * @param code Exit code to return.
