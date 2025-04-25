@@ -59,7 +59,6 @@ typedef struct s_table
 	int				max_meals;
 	int				total_fed;
 	int				someone_died;
-	int				num_meals;
 	int				simulation_ended;
 	int				log_colored;
 	long			start_time;
