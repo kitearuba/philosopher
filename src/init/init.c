@@ -12,16 +12,16 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Parses and validates command-line arguments.
+ * @brief Parses and validates the command-line arguments.
  *
- * Converts the provided arguments into numeric values stored in the table.
- * Checks for argument count, range, and validity. Enables or disables
- * colored logging based on philosopher count.
+ * Converts input strings to integers and stores them into the table.
+ * Also checks that each input is within valid ranges.
+ * Disables color logging if there are too many philosophers (>PHILO_COLOR_CAP).
  *
  * @param table Pointer to the simulation's table structure.
  * @param argc Argument count.
  * @param argv Argument vector.
- * @return 0 on success, 1 if an error occurred.
+ * @return 0 on success, 1 on failure.
  */
 static int	parse_args(t_table *table, int argc, char **argv)
 {
@@ -34,7 +34,7 @@ static int	parse_args(t_table *table, int argc, char **argv)
 	table->time_to_eat = safe_atoi(argv[3], &error);
 	table->time_to_sleep = safe_atoi(argv[4], &error);
 	table->log_colored = 1;
-	if (table->num_philo > 50)
+	if (table->num_philo > PHILO_COLOR_CAP)
 		table->log_colored = 0;
 	if (argc == 6)
 		table->max_meals = safe_atoi(argv[5], &error);
@@ -53,10 +53,10 @@ static int	parse_args(t_table *table, int argc, char **argv)
 /**
  * @brief Allocates memory for philosophers and forks.
  *
- * Allocates and assigns memory for the philosopher array and fork mutexes.
- * On allocation failure, prints an error and frees previously allocated memory.
+ * Dynamically allocates memory for the philosophers array and fork mutexes.
+ * If allocation fails, prints an error and frees any allocated resources.
  *
- * @param table Pointer to the simulation table structure.
+ * @param table Pointer to the simulation's table structure.
  * @return 0 on success, 1 on allocation failure.
  */
 static int	allocate_simulation_memory(t_table *table)
@@ -74,13 +74,13 @@ static int	allocate_simulation_memory(t_table *table)
 }
 
 /**
- * @brief Initializes global mutexes used in the simulation.
+ * @brief Initializes the main global mutexes used in the simulation.
  *
- * Initializes all necessary mutexes for print locking, death detection,
- * tracking philosophers who have eaten, and simulation end control.
+ * Creates mutexes for printing actions, detecting death,
+ * tracking fed philosophers, and signaling simulation end.
  *
- * @param table Pointer to the simulation table.
- * @return 0 on success, 1 on failure.
+ * @param table Pointer to the simulation's table structure.
+ * @return 0 on success, 1 on mutex creation failure.
  */
 static int	init_mutexes(t_table *table)
 {
@@ -122,12 +122,12 @@ static void	init_philosopher_data(t_table *table)
 }
 
 /**
- * @brief Initializes the simulation by parsing input, allocating memory,
- *        initializing mutexes, and preparing philosopher data.
+ * @brief Fully initializes the simulation environment.
  *
- * This function is called once in main before starting the threads.
+ * Parses user input, allocates memory, initializes all mutexes, and prepares
+ * philosophers' data. Called once in main() before starting any threads.
  *
- * @param table Pointer to the table structure (already allocated in main).
+ * @param table Pointer to the already allocated table structure.
  * @param argc Argument count.
  * @param argv Argument values.
  * @return 0 on success, 1 on failure.

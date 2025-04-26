@@ -33,6 +33,7 @@
 # define YELLOW			"\033[33m"
 # define BLUE			"\033[34m"
 # define CYAN			"\033[36m"
+# define PHILO_COLOR_CAP	100
 # define PHILO_PRINT_CAP	100
 
 /* ************************************************************************** */

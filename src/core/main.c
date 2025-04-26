@@ -13,15 +13,16 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Initializes and starts the simulation by creating a thread for each
- * philosopher.
+ * @brief Initializes each philosopher and starts their threads.
  *
- * This function sets the simulation's start time and initializes each
- * philosopher's ID, last meal time, and pointer to the shared table. It then
- * creates a thread for each philosopher to run their routine concurrently.
+ * This function sets the simulation's start time, initializes each
+ * philosopher's ID, last meal timestamp, and links to the shared table data.
+ * Then, it creates a thread for each philosopher to run their routine
+ * concurrently.
  *
  * @param table Pointer to the simulation's table structure.
  */
+
 static void	start_simulation(t_table *table)
 {
 	int			i;
@@ -42,14 +43,17 @@ static void	start_simulation(t_table *table)
 }
 
 /**
- * @brief Handles simulation cleanup and exit.
+ * @brief Handles memory cleanup and exits the program.
  *
- * Cleans up memory, prints meal summary(if enabled), &  exits with a given code.
+ * Frees all allocated resources, including mutexes and philosophers.
+ * Frees the main table structure itself.
+ * Returns the given exit code to the operating system.
  *
  * @param table Pointer to the simulation table.
  * @param code Exit code to return.
  * @return int Exit code.
  */
+
 static int	exit_simulation(t_table *table, int code)
 {
 	cleanup_simulation(table);
@@ -58,11 +62,12 @@ static int	exit_simulation(t_table *table, int code)
 }
 
 /**
- * @brief Entry point of the simulation program.
+ * @brief Entry point of the philosophers simulation.
  *
- * This function allocates the table structure, initializes the simulation,
- * starts the philosopher threads, and launches the monitor thread. It then
- * waits for all threads to finish and performs cleanup.
+ * Allocates memory for the simulation table, initializes the simulation
+ * parameters and resources, handles the special case where max_meals is zero
+ * (instant finish), starts the philosopher threads and the monitor thread,
+ * waits for all threads to complete, and finally cleans up before exiting.
  *
  * @param argc Argument count.
  * @param argv Argument values.
