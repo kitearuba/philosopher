@@ -9,20 +9,17 @@
 /*   Updated: 2025/04/24 18:18:00 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   routine.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: chrrodri <chrrodri@student.42barcelona.co> +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/24 18:07:00 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/24 18:10:00 by chrrodri         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../../include/philo.h"
 
+/**
+ * @brief Locks a fork for a philosopher and prints the action if simulation is active.
+ *
+ * If the simulation has ended, unlocks the forks instead.
+ *
+ * @param philo Pointer to the philosopher structure.
+ * @param fork_index Index of the fork to lock.
+ */
 static void	unlock_forks(t_philosophers *philo)
 {
 	pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
@@ -30,6 +27,14 @@ static void	unlock_forks(t_philosophers *philo)
 		philo->id % philo->table->num_philo]);
 }
 
+/**
+ * @brief Handles fork locking order based on philosopher ID.
+ *
+ * Even IDs pick up the right fork first, odd IDs pick up the left fork first.
+ * This reduces the risk of deadlocks.
+ *
+ * @param philo Pointer to the philosopher structure.
+ */
 static void	lock_fork(t_philosophers *philo, int fork_index)
 {
 	pthread_mutex_lock(&philo->table->forks[fork_index]);
@@ -39,6 +44,14 @@ static void	lock_fork(t_philosophers *philo, int fork_index)
 		print_action(philo, "has taken a fork");
 }
 
+/**
+ * @brief Handles fork locking order based on philosopher ID.
+ *
+ * Even IDs pick up the right fork first, odd IDs pick up the left fork first.
+ * This reduces the risk of deadlocks.
+ *
+ * @param philo Pointer to the philosopher structure.
+ */
 static void	handle_forking(t_philosophers *philo)
 {
 	int	left;
@@ -60,6 +73,13 @@ static void	handle_forking(t_philosophers *philo)
 	}
 }
 
+/**
+ * @brief Executes one full cycle of eating, sleeping, and thinking.
+ *
+ * Handles fork unlocking, meal counting, sleeping, and thinking actions.
+ *
+ * @param philo Pointer to the philosopher structure.
+ */
 static void	do_cycle(t_philosophers *philo)
 {
 	if (is_simulation_ended(philo->table))
@@ -89,6 +109,16 @@ static void	do_cycle(t_philosophers *philo)
 	print_action(philo, "is thinking");
 }
 
+/**
+ * @brief Routine executed by each philosopher thread.
+ *
+ * Handles the special case for a single philosopher, and otherwise
+ * continuously repeats the eating-sleeping-thinking cycle until the simulation
+ * ends.
+ *
+ * @param arg Pointer to the philosopher structure.
+ * @return NULL when routine finishes.
+ */
 void	*philo_routine(void *arg)
 {
 	t_philosophers	*philo;

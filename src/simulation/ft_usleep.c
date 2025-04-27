@@ -15,10 +15,10 @@
 /**
  * @brief Sleeps for a given amount of time in milliseconds.
  *
- * A wrapper around usleep that checks elapsed time in a loop,
- * ensuring more precise timing than a single usleep call.
+ * A wrapper around usleep that repeatedly checks the elapsed time
+ * to provide more accurate sleeping than a single call to usleep.
  *
- * @param milliseconds Time to sleep in milliseconds.
+ * @param milliseconds Time to sleep, in milliseconds.
  */
 void	ft_usleep(int milliseconds)
 {

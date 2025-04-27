@@ -12,6 +12,16 @@
 
 #include "../../include/philo.h"
 
+/**
+ * @brief Compares two strings for equality.
+ *
+ * Returns 0 if the strings are identical, otherwise returns the difference
+ * between the first non-matching characters.
+ *
+ * @param s1 First string.
+ * @param s2 Second string.
+ * @return 0 if strings are equal, non-zero otherwise.
+ */
 static int	ft_strcmp(const char *s1, const char *s2)
 {
 	while (*s1 && *s2)
@@ -24,6 +34,15 @@ static int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
 
+/**
+ * @brief Prints a philosopher's action with optional coloring.
+ *
+ * Only prints actions if the simulation is ongoing, except for "died" events.
+ * Adds colored output for better readability if enabled.
+ *
+ * @param philo Pointer to the philosopher structure.
+ * @param message Action message (e.g., "is eating", "died").
+ */
 void	print_action(t_philosophers *philo, const char *message)
 {
 	long		timestamp;
@@ -51,6 +70,13 @@ void	print_action(t_philosophers *philo, const char *message)
 	pthread_mutex_unlock(&philo->table->print_lock);
 }
 
+/**
+ * @brief Prints a summary of how many times each philosopher ate.
+ *
+ * Called after the simulation ends, listing meals eaten per philosopher.
+ *
+ * @param table Pointer to the simulation table.
+ */
 void	print_meal_summary(t_table *table)
 {
 	int	i;

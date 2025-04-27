@@ -13,14 +13,14 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Checks if a philosopher has died from starvation.
+ * @brief Checks if a philosopher has died from not eating in time.
  *
- * Compares the time since the last meal to the allowed time to die.
- * If the philosopher has exceeded this time, marks the simulation as ended.
+ * Compares the current time to the philosopher's last meal time.
+ * If the time exceeds time_to_die, marks the simulation as ended.
  *
  * @param table Pointer to the simulation table.
  * @param i Index of the philosopher to check.
- * @return 1 if the philosopher died, 0 otherwise.
+ * @return 1 if the philosopher has died, 0 otherwise.
  */
 static int	check_death(t_table *table, int i)
 {
@@ -39,11 +39,11 @@ static int	check_death(t_table *table, int i)
 /**
  * @brief Checks if all philosophers have eaten the required number of meals.
  *
- * If max_meals is set, and the number of fully fed philosophers is
- * equal to or greater than num_philo, the simulation ends.
+ * If max_meals is set, and the total number of fully fed philosophers
+ * is equal to or greater than num_philo, the simulation ends.
  *
  * @param table Pointer to the simulation table.
- * @return 1 if all have eaten enough, 0 otherwise.
+ * @return 1 if all philosophers are fed, 0 otherwise.
  */
 static int	check_all_ate(t_table *table)
 {
@@ -59,10 +59,10 @@ static int	check_all_ate(t_table *table)
 }
 
 /**
- * @brief Monitoring thread to detect death or completion conditions.
+ * @brief Monitoring thread that detects death or completion conditions.
  *
- * Loops constantly, checking whether any philosopher has died,
- * or whether all have eaten enough. Ends when one of the conditions is met.
+ * Continuously checks if any philosopher has died or if all philosophers
+ * have eaten enough. Ends the simulation when one of these conditions is met.
  *
  * @param arg Pointer to the shared simulation table.
  * @return NULL when monitoring ends.

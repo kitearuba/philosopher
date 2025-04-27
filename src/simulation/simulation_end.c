@@ -13,9 +13,9 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Checks if the simulation has ended.
+ * @brief Checks if the simulation has ended in a thread-safe way.
  *
- * Uses a mutex to safely read the `simulation_ended` flag.
+ * Locks the simulation mutex, reads the simulation_ended flag, then unlocks.
  *
  * @param table Pointer to the simulation table.
  * @return 1 if simulation has ended, 0 otherwise.
@@ -31,9 +31,9 @@ int	is_simulation_ended(t_table *table)
 }
 
 /**
- * @brief Sets the simulation end flag to true.
+ * @brief Marks the simulation as ended in a thread-safe way.
  *
- * Uses a mutex to safely update the `simulation_ended` value.
+ * Locks the simulation mutex, sets simulation_ended to 1, then unlocks.
  *
  * @param table Pointer to the simulation table.
  */
