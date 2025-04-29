@@ -66,7 +66,6 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	death_lock;
-	pthread_mutex_t	death_print_lock;
 	pthread_mutex_t	fed_lock;
 	pthread_mutex_t	simulation_lock;
 	t_philosophers	*philosophers;

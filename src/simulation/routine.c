@@ -13,7 +13,8 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Locks a fork for a philosopher and prints the action if simulation is active.
+ * @brief Locks a fork for a philosopher and prints the action if simulation is
+ * active.
  *
  * If the simulation has ended, unlocks the forks instead.
  *
