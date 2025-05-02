@@ -26,5 +26,9 @@ void	ft_usleep(int milliseconds)
 
 	start_time = get_time_in_ms();
 	while ((get_time_in_ms() - start_time) < milliseconds)
+	{
+		if (is_simulation_ended(table))
+		     break ;
 		usleep(500);
+	}
 }
