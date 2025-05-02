@@ -82,9 +82,10 @@ int	main(int argc, char **argv)
 	table = malloc(sizeof(t_table));
 	if (!table)
 		return (1);
+    memset(table, 0, sizeof(t_table));
 	i = 0;
 	if (init_simulation(table, argc, argv))
-		return (1);
+		return (exit_simulation(table, 1));
 	if (table->max_meals == 0)
 		return (exit_simulation(table, 0));
 	start_simulation(table);

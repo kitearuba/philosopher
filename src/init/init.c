@@ -66,10 +66,7 @@ static int	allocate_simulation_memory(t_table *table)
 		return (printf("Error: malloc failed\n"), 1);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
-	{
-		free(table->philosophers);
 		return (printf("Error: malloc failed\n"), 1);
-	}
 	return (0);
 }
 
@@ -135,10 +132,7 @@ static void	init_philosopher_data(t_table *table)
 int	init_simulation(t_table *table, int argc, char **argv)
 {
 	if (parse_args(table, argc, argv))
-	{
-		free(table);
 		return (1);
-	}
 	if (allocate_simulation_memory(table))
 		return (1);
 	if (init_mutexes(table))

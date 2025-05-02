@@ -25,17 +25,19 @@ void	cleanup_simulation(t_table *table)
 	int	i;
 
 	i = 0;
-	if (table->num_philo < 20)
+	if (table -> philosophers &&
+	    table->num_philo < PHILO_PRINT_CAP)
 		print_meal_summary(table);
-	while (i < table->num_philo)
+	if (table->forks)
 	{
-		pthread_mutex_destroy(&table->forks[i]);
-		i++;
+	    while (i < table->num_philo)
+	        pthread_mutex_destroy(&table->forks[i++]);
+        free(table->forks);
 	}
-	pthread_mutex_destroy(&table->print_lock);
+    if (table->philosophers)
+        free(table->philosophers);
+    pthread_mutex_destroy(&table->print_lock);
 	pthread_mutex_destroy(&table->fed_lock);
 	pthread_mutex_destroy(&table->death_lock);
 	pthread_mutex_destroy(&table->simulation_lock);
-	free(table->forks);
-	free(table->philosophers);
 }
