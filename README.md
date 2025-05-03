@@ -1,9 +1,15 @@
+Thanks for the reminder! Here's the updated `README.md`, clearly stating that the implementation covers **only the mandatory part** of the project — with improvements for stability, but **not bonus features** like process-based handling or semaphores.
+
 ---
+
+```markdown
 # 🌈 Philosophers - The Dining Simulation
 
 ![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C Programming](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square) ![42 Network](https://img.shields.io/badge/42Network-Philo-lightblue?style=flat-square)
 
 **Philosophers** is a concurrency simulation project from the **42 School curriculum**. It challenges students to solve the classic "Dining Philosophers Problem" using **threads**, **mutexes**, and precise **timing**, while strictly adhering to the **42 Norm** and **project constraints**.
+
+> 🧩 This implementation includes **only the mandatory part** of the project (multithreaded version with mutexes). Bonus features such as process-based concurrency or semaphores are **not** implemented here.
 
 ---
 
@@ -38,11 +44,10 @@ This implementation ensures:
 - 📊 Clean logging format: timestamps and philosopher ID
 - 💪 No memory leaks or race conditions (validated by Valgrind & ASan)
 
-### ✨ Bonus
-- Handles thousands of philosophers without freezing
-- Synchronizes death printing with `death_print_lock`
-- Optional colored logs for better visibility
-- Fully Norm-compliant (25-line functions, 80-column rule)
+### ⚠️ Not Included (Bonus)
+- No `fork()` or `semaphores` (process-based version)
+- No optional features like CLI toggles or advanced logs
+- Not tested for MacOS semaphore behavior (Linux only)
 
 ---
 
@@ -57,7 +62,6 @@ This implementation ensures:
 │   ├── simulation/     # Main simulation logic: routine, monitor, simulation_end
 │   ├── utils/          # Utility functions: print, time, cleanup, ft_usleep
 ├── Makefile            # Norm-compliant compilation
-├── test.sh             # Custom test runner (if present)
 └── README.md           # This file :)
 ```
 
@@ -99,7 +103,7 @@ This builds the `philo` executable using `-pthread` and flags required by 42:
 ```
 > All logs follow this strict format: `timestamp_in_ms philosopher_number action`
 
-> ⚠️ Important: The program must log a death within **10ms** of its occurrence.
+> ⚠️ The program must log a death within **10ms** of its occurrence.
 
 ---
 
@@ -111,7 +115,7 @@ This builds the `philo` executable using `-pthread` and flags required by 42:
   - If someone doesn't eat in time → they die → simulation ends
   - If everyone eats `N` times → simulation ends
 - A shared `simulation_ended` flag tells threads when to stop
-- A `death_print_lock` ensures the death message is printed **once**, even under high load
+- A `death_print_lock` ensures the death message is printed **only once**, even under high load
 
 ---
 
@@ -123,7 +127,7 @@ This builds the `philo` executable using `-pthread` and flags required by 42:
 | Mutexes           | One per fork + print/death/fed/sim flags          |
 | Timing            | Uses `gettimeofday()` and custom `ft_usleep()`    |
 | Exit Logic        | Controlled by `simulation_ended` flag             |
-| Stability         | Can handle 1000+ philosophers without crashing    |
+| Stability         | Handles 1000+ philosophers without crashing       |
 | Memory Safety     | Valgrind and ASan clean (no leaks or overflows)   |
 
 ---
@@ -152,3 +156,6 @@ This builds the `philo` executable using `-pthread` and flags required by 42:
 
 - **Christian (chrrodri)**  
   GitHub: [@kitearuba](https://github.com/kitearuba)
+```
+
+Would you like this as a downloadable `.md` file or added directly to your repo’s README?
