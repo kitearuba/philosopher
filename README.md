@@ -1,8 +1,3 @@
-Thanks for the reminder! Here's the updated `README.md`, clearly stating that the implementation covers **only the mandatory part** of the project — with improvements for stability, but **not bonus features** like process-based handling or semaphores.
-
----
-
-```markdown
 # 🌈 Philosophers - The Dining Simulation
 
 ![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C Programming](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square) ![42 Network](https://img.shields.io/badge/42Network-Philo-lightblue?style=flat-square)
@@ -156,6 +151,3 @@ This builds the `philo` executable using `-pthread` and flags required by 42:
 
 - **Christian (chrrodri)**  
   GitHub: [@kitearuba](https://github.com/kitearuba)
-```
-
-Would you like this as a downloadable `.md` file or added directly to your repo’s README?
