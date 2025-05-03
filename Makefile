@@ -41,13 +41,13 @@ DEPS 			= $(HEADER) $(MAKEFILE)
 SRC 		:= $(SRC_DIR)/core/main.c \
                $(SRC_DIR)/init/init.c \
                $(SRC_DIR)/init/safe_atoi.c \
-               $(SRC_DIR)/simulation/ft_usleep.c \
                $(SRC_DIR)/simulation/monitor.c \
-               $(SRC_DIR)/simulation/print.c \
-               $(SRC_DIR)/simulation/routine.c \
-               $(SRC_DIR)/simulation/time.c \
                $(SRC_DIR)/simulation/simulation_end.c \
-               $(SRC_DIR)/utils/cleanup.c \
+               $(SRC_DIR)/simulation/routine.c \
+               $(SRC_DIR)/utils/time.c \
+               $(SRC_DIR)/utils/print.c \
+               $(SRC_DIR)/utils/ft_usleep.c \
+               $(SRC_DIR)/utils/cleanup.c
 
 # Object files
 OBJ			= $(SRC:.c=.o)
