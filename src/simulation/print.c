@@ -15,12 +15,13 @@
 /**
  * @brief Compares two strings for equality.
  *
- * Returns 0 if the strings are identical, otherwise returns the difference
- * between the first non-matching characters.
+ * Mimics the behavior of the standard strcmp function.
+ * Compares each character in order and returns the difference
+ * between the first pair of non-matching characters.
  *
  * @param s1 First string.
  * @param s2 Second string.
- * @return 0 if strings are equal, non-zero otherwise.
+ * @return 0 if strings are equal, a non-zero integer otherwise.
  */
 static int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -35,33 +36,51 @@ static int	ft_strcmp(const char *s1, const char *s2)
 }
 
 /**
- * @brief Prints a philosopher's action with optional coloring.
+ * @brief Maps action message to its corresponding color.
  *
- * Only prints actions if the simulation is ongoing, except for "died" events.
- * Adds colored output for better readability if enabled.
+ * @param message The action message (e.g., "is eating").
+ * @return The ANSI color string.
+ */
+static const char	*message_to_color(const char *message)
+{
+    if (!ft_strcmp(message, "is eating"))
+        return (GREEN);
+    if (!ft_strcmp(message, "is sleeping"))
+        return (CYAN);
+    if (!ft_strcmp(message, "is thinking"))
+        return (BLUE);
+    if (!ft_strcmp(message, "died"))
+        return (RED);
+    return (RESET);
+}
+
+
+/**
+ * @brief Prints a philosopher's current action with a timestamp and optional color.
  *
- * @param philo Pointer to the philosopher structure.
- * @param message Action message (e.g., "is eating", "died").
+ * This function locks the print mutex to safely output messages to the terminal.
+ * It ensures that messages are only printed if the simulation is still running,
+ * except for the "died" message, which must always be printed. Output is color-coded
+ * for better readability when log_colored is enabled.
+ *
+ * @param philo Pointer to the philosopher.
+ * @param message The action message (e.g., "is eating", "died").
  */
 void	print_action(t_philosophers *philo, const char *message)
 {
-	long		timestamp;
-	const char	*color;
+    long		timestamp;
+    const char	*color;
 
-	if (is_simulation_ended(philo->table)
-		&& ft_strcmp(message, "died") != 0)
-		return ;
-	color = RESET;
-	if (!ft_strcmp(message, "is eating"))
-		color = GREEN;
-	else if (!ft_strcmp(message, "is sleeping"))
-		color = CYAN;
-	else if (!ft_strcmp(message, "is thinking"))
-		color = BLUE;
-	else if (!ft_strcmp(message, "died"))
-		color = RED;
-	pthread_mutex_lock(&philo->table->print_lock);
-	timestamp = get_time_in_ms() - philo->table->start_time;
+    if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
+            return ;
+    pthread_mutex_lock(&philo->table->print_lock);
+    if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
+    {
+        pthread_mutex_unlock(&philo->table->print_lock);
+        return ;
+    }
+    timestamp = get_time_in_ms() - philo->table->start_time;
+	color = message_to_color(message);
 	if (philo->table->log_colored)
 		printf("%ld %s%d%s %s%s%s\n", timestamp, YELLOW, philo->id,
 			RESET, color, message, RESET);
@@ -71,11 +90,12 @@ void	print_action(t_philosophers *philo, const char *message)
 }
 
 /**
- * @brief Prints a summary of how many times each philosopher ate.
+ * @brief Prints how many times each philosopher has eaten.
  *
- * Called after the simulation ends, listing meals eaten per philosopher.
+ * This function is called at the end of the simulation to provide a summary.
+ * It loops through all philosophers and reports their meal count.
  *
- * @param table Pointer to the simulation table.
+ * @param table Pointer to the shared simulation data.
  */
 void	print_meal_summary(t_table *table)
 {

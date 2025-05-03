@@ -30,8 +30,11 @@
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/philo.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/philo.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/init/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/init/init.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/ft_usleep.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/ft_usleep.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/monitor.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/monitor.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/print.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/print.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/cleanup.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/cleanup.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -289,6 +292,9 @@
       <workItem from="1745922621446" duration="2846000" />
       <workItem from="1745966022573" duration="1188000" />
       <workItem from="1746028009582" duration="3974000" />
+      <workItem from="1746200430355" duration="2007000" />
+      <workItem from="1746223701941" duration="2000" />
+      <workItem from="1746224356911" duration="10956000" />
     </task>
     <servers />
   </component>

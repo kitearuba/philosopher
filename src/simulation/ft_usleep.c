@@ -13,14 +13,17 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Sleeps for a given amount of time in milliseconds.
+ * @brief Sleeps for a given number of milliseconds, with early exit if simulation ends.
  *
- * A wrapper around usleep that repeatedly checks the elapsed time
- * to provide more accurate sleeping than a single call to usleep.
+ * This function wraps around `usleep` in a loop to achieve more accurate delays,
+ * especially in simulations with small timing margins. It checks both the elapsed
+ * time and whether the simulation has ended, to avoid unnecessary waiting after
+ * a philosopher has died or the simulation is marked complete.
  *
- * @param milliseconds Time to sleep, in milliseconds.
+ * @param milliseconds Duration to sleep, in milliseconds.
+ * @param table Pointer to the shared simulation table (used to check stop condition).
  */
-void	ft_usleep(int milliseconds)
+void	ft_usleep(int milliseconds, t_table *table)
 {
 	long	start_time;
 

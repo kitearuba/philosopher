@@ -84,7 +84,8 @@ static int	init_mutexes(t_table *table)
 	if (pthread_mutex_init(&table->print_lock, NULL)
 		|| pthread_mutex_init(&table->death_lock, NULL)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
-		|| pthread_mutex_init(&table->simulation_lock, NULL))
+		|| pthread_mutex_init(&table->simulation_lock, NULL)
+	    || pthread_mutex_init(&table->death_print_lock, NULL))
 	{
 		printf("Error: mutex init failed\n");
 		return (1);

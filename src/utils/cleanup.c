@@ -40,4 +40,5 @@ void	cleanup_simulation(t_table *table)
 	pthread_mutex_destroy(&table->fed_lock);
 	pthread_mutex_destroy(&table->death_lock);
 	pthread_mutex_destroy(&table->simulation_lock);
+    pthread_mutex_destroy(&table->death_print_lock);
 }

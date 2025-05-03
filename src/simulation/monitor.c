@@ -29,7 +29,6 @@ static int	check_death(t_table *table, int i)
 	time = get_time_in_ms() - table->philosophers[i].last_meal_time;
 	if (time > table->time_to_die)
 	{
-		print_action(&table->philosophers[i], "died");
 		set_simulation_end(table);
 		return (1);
 	}
@@ -78,13 +77,18 @@ void	*monitor_death(void *arg)
 		i = 0;
 		while (i < table->num_philo)
 		{
-			if (check_death(table, i))
-				return (NULL);
+		    if (check_death(table, i))
+		    {
+		        pthread_mutex_lock(&table->death_print_lock);
+		        print_action(&table->philosophers[i], "died");
+		        pthread_mutex_unlock(&table->death_print_lock);
+		        return (NULL);
+		    }
 			i++;
 		}
 		if (check_all_ate(table))
 			return (NULL);
-		usleep(1000);
+		ft_usleep(1, table);
 	}
 	return (NULL);
 }

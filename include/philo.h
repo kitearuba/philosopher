@@ -66,6 +66,7 @@ typedef struct s_table
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
+    pthread_mutex_t	death_print_lock;
 	pthread_mutex_t	death_lock;
 	pthread_mutex_t	fed_lock;
 	pthread_mutex_t	simulation_lock;
@@ -78,7 +79,7 @@ typedef struct s_table
 
 void		*philo_routine(void *arg);
 long		get_time_in_ms(void);
-void		ft_usleep(int milliseconds);
+void		ft_usleep(int milliseconds, t_table *table);
 void		print_action(t_philosophers *philo, const char *message);
 void		print_meal_summary(t_table *table);
 void		*monitor_death(void *arg);
