@@ -98,8 +98,12 @@ static void	do_cycle(t_philosophers *philo)
 	if (philo->table->max_meals > 0)
 	{
 		pthread_mutex_lock(&philo->table->fed_lock);
-		if (philo->meals_eaten == philo->table->max_meals)
-			philo->table->total_fed++;
+	    if (philo->meals_eaten == philo->table->max_meals)
+	    {
+	        philo->table->total_fed++;
+	        if (philo->table->total_fed == philo->table->num_philo)
+	            set_simulation_end(philo->table);
+	    }
 		pthread_mutex_unlock(&philo->table->fed_lock);
 	}
 	unlock_forks(philo);

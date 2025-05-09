@@ -29,6 +29,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9059cbc1-5621-4011-bc36-499ca9fea68b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/philo" beforeDir="false" afterPath="$PROJECT_DIR$/philo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/routine.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/routine.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -312,7 +314,11 @@
       <workItem from="1746359285312" duration="15000" />
       <workItem from="1746373820459" duration="357000" />
       <workItem from="1746383597278" duration="5511000" />
-      <workItem from="1746401082451" duration="2021000" />
+      <workItem from="1746401082451" duration="2658000" />
+      <workItem from="1746530782210" duration="54000" />
+      <workItem from="1746530935914" duration="584000" />
+      <workItem from="1746654328277" duration="1302000" />
+      <workItem from="1746751456613" duration="4001000" />
     </task>
     <servers />
   </component>
