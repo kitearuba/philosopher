@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 23:12:26 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 23:32:52 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,21 @@ static void	handle_forking(t_philosophers *philo)
  */
 static void	handle_meal_tracking(t_philosophers *philo)
 {
-	if (philo->table->max_meals <= 0)
-		return ;
-	pthread_mutex_lock(&philo->table->fed_lock);
-	if (philo->meals_eaten == philo->table->max_meals)
+	if (philo->table->max_meals > 0)
 	{
-		philo->table->total_fed++;
-		if (philo->table->total_fed == philo->table->num_philo)
-			set_simulation_end(philo->table);
+		pthread_mutex_lock(&philo->table->fed_lock);
+		if (philo->meals_eaten == philo->table->max_meals)
+		{
+			philo->table->total_fed++;
+			if (philo->table->total_fed == philo->table->num_philo)
+			{
+				set_simulation_end(philo->table);
+				pthread_mutex_unlock(&philo->table->fed_lock);
+				return ;
+			}
+		}
+		pthread_mutex_unlock(&philo->table->fed_lock);
 	}
-	pthread_mutex_unlock(&philo->table->fed_lock);
 }
 
 /**
