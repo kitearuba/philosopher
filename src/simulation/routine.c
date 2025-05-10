@@ -6,43 +6,11 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/24 18:18:00 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 23:12:26 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
-
-/**
- * @brief Unlocks both forks held by a philosopher.
- *
- * This function releases the mutexes for the left and right forks
- * associated with the given philosopher. It is called after eating
- * or when the simulation ends prematurely.
- *
- * @param philo Pointer to the philosopher structure.
- */
-static void	unlock_forks(t_philosophers *philo)
-{
-	pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
-	pthread_mutex_unlock(&philo->table->forks[
-		philo->id % philo->table->num_philo]);
-}
-
-/**
- * @brief Locks a specific fork and logs the action.
- *
- * Locks the fork at the given index. If the simulation has not ended,
- * prints a log message indicating the fork has been taken.
- *
- * @param philo Pointer to the philosopher structure.
- * @param fork_index Index of the fork to lock.
- */
-static void	lock_fork(t_philosophers *philo, int fork_index)
-{
-	pthread_mutex_lock(&philo->table->forks[fork_index]);
-	if (!is_simulation_ended(philo->table))
-		print_action(philo, "has taken a fork");
-}
 
 /**
  * @brief Locks forks in an order that reduces deadlocks.
@@ -75,15 +43,40 @@ static void	handle_forking(t_philosophers *philo)
 }
 
 /**
- * @brief Executes one full cycle of eating, sleeping, and thinking.
+ * @brief Handles the eating phase and meal tracking logic.
  *
- * The philosopher eats (locking both forks), increments meal counters,
- * sleeps, and then thinks — unless the simulation ends in between.
- * Forks are unlocked after eating. Simulation checks are performed
- * throughout to allow early termination.
+ * Locks both forks, logs the eating action, updates the last meal timestamp,
+ * sleeps for the eating duration, and increments the meals eaten count.
+ * Also updates the total_fed counter if the philosopher has reached the
+ * required number of meals. Forks are unlocked at the end.
  *
  * @param philo Pointer to the philosopher structure.
  */
+static void	handle_meal_tracking(t_philosophers *philo)
+{
+	if (philo->table->max_meals <= 0)
+		return ;
+	pthread_mutex_lock(&philo->table->fed_lock);
+	if (philo->meals_eaten == philo->table->max_meals)
+	{
+		philo->table->total_fed++;
+		if (philo->table->total_fed == philo->table->num_philo)
+			set_simulation_end(philo->table);
+	}
+	pthread_mutex_unlock(&philo->table->fed_lock);
+}
+
+/**
+ * @brief Executes a full philosopher cycle of eating, sleeping, and thinking.
+ *
+ * This function coordinates the philosopher’s routine by first checking
+ * simulation status, then invoking the helper that handles eating and
+ * meal tracking. If the simulation hasn’t ended, it proceeds with sleeping
+ * and thinking phases.
+ *
+ * @param philo Pointer to the philosopher structure.
+ */
+
 static void	do_cycle(t_philosophers *philo)
 {
 	if (is_simulation_ended(philo->table))
@@ -95,17 +88,7 @@ static void	do_cycle(t_philosophers *philo)
 	philo->last_meal_time = get_time_in_ms();
 	ft_usleep(philo->table->time_to_eat, philo->table);
 	philo->meals_eaten++;
-	if (philo->table->max_meals > 0)
-	{
-		pthread_mutex_lock(&philo->table->fed_lock);
-	    if (philo->meals_eaten == philo->table->max_meals)
-	    {
-	        philo->table->total_fed++;
-	        if (philo->table->total_fed == philo->table->num_philo)
-	            set_simulation_end(philo->table);
-	    }
-		pthread_mutex_unlock(&philo->table->fed_lock);
-	}
+	handle_meal_tracking(philo);
 	unlock_forks(philo);
 	if (is_simulation_ended(philo->table))
 		return ;
@@ -138,7 +121,7 @@ void	*philo_routine(void *arg)
 		pthread_mutex_lock(&philo->table->forks[0]);
 		print_action(philo, "has taken a fork");
 		while (!is_simulation_ended(philo->table))
-		    ft_usleep(1, philo->table);
+			ft_usleep(1, philo->table);
 		pthread_mutex_unlock(&philo->table->forks[0]);
 		return (NULL);
 	}

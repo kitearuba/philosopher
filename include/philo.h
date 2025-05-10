@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/24 18:04:04 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 22:40:44 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ typedef struct s_table
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
-    pthread_mutex_t	death_print_lock;
+	pthread_mutex_t	death_print_lock;
 	pthread_mutex_t	death_lock;
 	pthread_mutex_t	fed_lock;
 	pthread_mutex_t	simulation_lock;
@@ -78,6 +78,8 @@ typedef struct s_table
 /* ************************************************************************** */
 
 void		*philo_routine(void *arg);
+void		unlock_forks(t_philosophers *philo);
+void		lock_fork(t_philosophers *philo, int fork_index);
 long		get_time_in_ms(void);
 void		ft_usleep(int milliseconds, t_table *table);
 void		print_action(t_philosophers *philo, const char *message);

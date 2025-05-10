@@ -6,7 +6,7 @@
 #    By: chrrodri <chrrodri@student.42barcelon      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/18 10:40:40 by chrrodri          #+#    #+#              #
-#    Updated: 2025/02/18 11:09:43 by chrrodri         ###   ########.fr        #
+#    Updated: 2025/05/10 22:39:11 by chrrodri         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,6 +44,7 @@ SRC 		:= $(SRC_DIR)/core/main.c \
                $(SRC_DIR)/simulation/monitor.c \
                $(SRC_DIR)/simulation/simulation_end.c \
                $(SRC_DIR)/simulation/routine.c \
+               $(SRC_DIR)/simulation/fork_handling.c \
                $(SRC_DIR)/utils/time.c \
                $(SRC_DIR)/utils/print.c \
                $(SRC_DIR)/utils/ft_usleep.c \

@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 21:56:53 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 21:51:13 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../../include/philo.h"
@@ -85,7 +85,7 @@ static int	init_mutexes(t_table *table)
 		|| pthread_mutex_init(&table->death_lock, NULL)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
 		|| pthread_mutex_init(&table->simulation_lock, NULL)
-	    || pthread_mutex_init(&table->death_print_lock, NULL))
+		|| pthread_mutex_init(&table->death_print_lock, NULL))
 	{
 		printf("Error: mutex init failed\n");
 		return (1);

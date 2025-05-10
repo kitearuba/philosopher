@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 11:21:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/24 18:08:16 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 21:50:36 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int	main(int argc, char **argv)
 	table = malloc(sizeof(t_table));
 	if (!table)
 		return (1);
-    memset(table, 0, sizeof(t_table));
+	memset(table, 0, sizeof(t_table));
 	i = 0;
 	if (init_simulation(table, argc, argv))
 		return (exit_simulation(table, 1));

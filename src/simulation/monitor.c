@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 22:01:21 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/10 21:52:20 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,13 @@ void	*monitor_death(void *arg)
 		i = 0;
 		while (i < table->num_philo)
 		{
-		    if (check_death(table, i))
-		    {
-		        pthread_mutex_lock(&table->death_print_lock);
-		        print_action(&table->philosophers[i], "died");
-		        pthread_mutex_unlock(&table->death_print_lock);
-		        return (NULL);
-		    }
+			if (check_death(table, i))
+			{
+				pthread_mutex_lock(&table->death_print_lock);
+				print_action(&table->philosophers[i], "died");
+				pthread_mutex_unlock(&table->death_print_lock);
+				return (NULL);
+			}
 			i++;
 		}
 		if (check_all_ate(table))
