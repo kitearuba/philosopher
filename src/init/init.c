@@ -27,6 +27,7 @@ static int	parse_args(t_table *table, int argc, char **argv)
 {
 	int	error;
 
+ error = 0;
 	if (argc < 5 || argc > 6)
 		return (printf("Error: wrong number of args\n"), 1);
 	table->num_philo = safe_atoi(argv[1], &error);
