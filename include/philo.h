@@ -47,6 +47,7 @@ typedef struct s_philosophers
 {
 	int				id;
 	int				meals_eaten;
+    int				is_fed;
 	long			last_meal_time;
 	pthread_t		thread;
 	t_table			*table;

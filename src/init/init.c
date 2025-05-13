@@ -27,7 +27,6 @@ static int	parse_args(t_table *table, int argc, char **argv)
 {
 	int	error;
 
- error = 0;
 	if (argc < 5 || argc > 6)
 		return (printf("Error: wrong number of args\n"), 1);
 	table->num_philo = safe_atoi(argv[1], &error);
@@ -45,8 +44,7 @@ static int	parse_args(t_table *table, int argc, char **argv)
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
 		|| (argc == 6 && table->max_meals < 0))
 	{
-		printf("Error: wrong input\n");
-		return (1);
+		return (printf("Error: wrong input\n"), 1);
 	}
 	return (0);
 }
@@ -87,10 +85,7 @@ static int	init_mutexes(t_table *table)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
 		|| pthread_mutex_init(&table->simulation_lock, NULL)
 		|| pthread_mutex_init(&table->death_print_lock, NULL))
-	{
-		printf("Error: mutex init failed\n");
-		return (1);
-	}
+		return (printf("Error: mutex init failed\n"), 1);
 	return (0);
 }
 
@@ -114,6 +109,7 @@ static void	init_philosopher_data(t_table *table)
 	{
 		table->philosophers[i].id = i + 1;
 		table->philosophers[i].meals_eaten = 0;
+	    table->philosophers[i].is_fed = 0;
 		table->philosophers[i].last_meal_time = 0;
 		table->philosophers[i].table = table;
 		i++;

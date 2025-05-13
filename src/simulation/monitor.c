@@ -24,15 +24,18 @@
  */
 static int	check_death(t_table *table, int i)
 {
-	long	time;
+    long	time;
 
-	time = get_time_in_ms() - table->philosophers[i].last_meal_time;
-	if (time > table->time_to_die)
-	{
-		set_simulation_end(table);
-		return (1);
-	}
-	return (0);
+    time = get_time_in_ms() - table->philosophers[i].last_meal_time;
+    if (time > table->time_to_die)
+    {
+        set_simulation_end(table);
+        pthread_mutex_lock(&table->death_print_lock);
+        print_action(&table->philosophers[i], "died");
+        pthread_mutex_unlock(&table->death_print_lock);
+        return (1);
+    }
+    return (0);
 }
 
 /**
@@ -46,15 +49,16 @@ static int	check_death(t_table *table, int i)
  */
 static int	check_all_ate(t_table *table)
 {
-	if (table->max_meals > 0)
-	{
-		if (table->total_fed >= table->num_philo)
-		{
-			set_simulation_end(table);
-			return (1);
-		}
-	}
-	return (0);
+    if (table->max_meals > 0 && table->total_fed >= table->num_philo)
+    {
+        set_simulation_end(table);
+        pthread_mutex_lock(&table->print_lock);
+        printf("%ld 0 All philosophers have eaten enough\n",
+            get_time_in_ms() - table->start_time);
+        pthread_mutex_unlock(&table->print_lock);
+        return (1);
+    }
+    return (0);
 }
 
 /**
@@ -68,27 +72,22 @@ static int	check_all_ate(t_table *table)
  */
 void	*monitor_death(void *arg)
 {
-	t_table	*table;
-	int		i;
+    t_table	*table;
+    int	i;
 
-	table = (t_table *)arg;
-	while (!is_simulation_ended(table))
-	{
-		i = 0;
-		while (i < table->num_philo)
-		{
-			if (check_death(table, i))
-			{
-				pthread_mutex_lock(&table->death_print_lock);
-				print_action(&table->philosophers[i], "died");
-				pthread_mutex_unlock(&table->death_print_lock);
-				return (NULL);
-			}
-			i++;
-		}
-		if (check_all_ate(table))
-			return (NULL);
-		ft_usleep(1, table);
-	}
-	return (NULL);
+    table = (t_table *)arg;
+    while (!is_simulation_ended(table))
+    {
+        i = 0;
+        while (i < table->num_philo)
+        {
+            if (check_death(table, i))
+                return (NULL);
+            i++;
+        }
+        if (check_all_ate(table))
+            return (NULL);
+        ft_usleep(1, table);
+    }
+    return (NULL);
 }
