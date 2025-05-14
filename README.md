@@ -1,11 +1,11 @@
-# 🌈 Philosophers - The Dining Simulation
+# 🧠 Philosophers - Dining Simulation (42 Project)
 
-![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C Programming](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square) ![42 Network](https://img.shields.io/badge/42Network-Philo-lightblue?style=flat-square)
+![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square)
 
-**Philosophers** is a concurrency simulation project from the **42 School curriculum**. It challenges students to solve the classic "Dining Philosophers Problem" using **threads**, **mutexes**, and precise **timing**, while strictly adhering to the **42 Norm** and project constraints.
+This project simulates the famous **Dining Philosophers Problem** using **POSIX threads and mutexes**, as part of the 42 core curriculum. The goal is to create a deadlock-free, starvation-safe system where philosophers eat, sleep, and think — using shared forks.
 
-> 🧩 This implementation includes only the **mandatory multithreaded version** (no processes/semaphores).  
-> ✅ Fully Norm-compliant, clean shutdown, and highly stable — even under tight timing and 1000+ philosophers.
+> ✅ This implementation is focused on the **mandatory multithreaded version**.  
+> ❌ No bonus (processes/semaphores) included.
 
 ---
 
@@ -14,49 +14,39 @@
 - [Introduction](#introduction)
 - [Features](#features)
 - [Project Structure](#project-structure)
-- [Installation & Compilation](#installation--compilation)
+- [Compilation](#compilation)
 - [Usage](#usage)
-- [How It Works (Simple Terms)](#-how-it-works-simple-terms)
-- [Technical Design Decisions](#️-technical-design-decisions)
-- [Locking Strategy](#-locking-strategy)
-- [Test Scenarios](#-test-scenarios)
-- [Acknowledgments](#-acknowledgments)
-- [Author](#-author)
+- [How It Works](#how-it-works)
+- [Design Highlights](#design-highlights)
+- [Locking Strategy](#locking-strategy)
+- [Test Scenarios](#test-scenarios)
+- [Testing Notes](#testing-notes)
+- [Optional Macros](#optional-macros)
+- [Acknowledgments](#acknowledgments)
+- [Author](#author)
 
 ---
 
-## 📚 Introduction
+## 🧠 Introduction
 
-This project simulates a group of philosophers sitting at a table who:
-1. Think  
-2. Take forks  
-3. Eat  
-4. Sleep  
-5. Repeat  
+Philosophers sit around a table, each needing two forks to eat. But forks are shared — leading to potential **deadlocks** or **starvation**. Your job is to design a simulation that:
 
-However, forks are shared, and if not synchronized properly, philosophers may **starve**, **deadlock**, or cause **race conditions**. Your goal is to prevent that — with style and performance.
-
-This implementation guarantees:
-- No unexpected deaths
-- Accurate max meal tracking
-- Clean simulation exit and reporting
-- Valgrind-clean and Norm-safe
+- Avoids deadlocks  
+- Tracks each philosopher's status  
+- Exits cleanly when a death or max-meal condition occurs  
+- Respects tight timing constraints (death must print within 10ms)
 
 ---
 
-## 💡 Features
+## ✨ Features
 
-### ✅ Mandatory Goals Met
-- 🧵 Multithreading with `pthread_create`
-- 🔐 Forks protected with `pthread_mutex`
-- ⏱ Custom `ft_usleep()` for responsive sleep + interrupt
-- 💀 Stops immediately on death, or after all meals are completed
-- 🧼 Clean memory and thread handling
-
-### ❌ Not Implemented (Bonus)
-- No process-based version
-- No CLI flags or GUI/log expansion
-- Not tested with semaphores (bonus)
+- 🧵 Multithreaded philosophers via `pthread_create`
+- 🔐 Forks are protected with individual mutexes
+- 🕐 `ft_usleep` offers responsive sleep and early exit
+- 🧮 Max-meal detection handled via central monitor
+- 🧼 Clean memory, no leaks (validated with Valgrind & sanitizers)
+- 📋 Logs are thread-safe and color-coded (up to 100 philosophers)
+- 🛠️ Optional macros allow toggling log verbosity
 
 ---
 
@@ -64,35 +54,40 @@ This implementation guarantees:
 
 ```bash
 .
-├── include/            # Header files (structs, prototypes, macros)
+├── include/            # Header files (philo.h)
 ├── src/
 │   ├── core/           # main.c
-│   ├── init/           # parse_args, safe_atoi, memory allocation
-│   ├── simulation/     # routine.c, monitor.c, simulation_end.c
-│   ├── utils/          # print.c, time.c, cleanup.c, ft_usleep.c
+│   ├── init/           # init.c, safe_atoi.c
+│   ├── simulation/     # routine.c, monitor.c, fork_handling.c, simulation_end.c
+│   ├── utils/          # print.c, ft_usleep.c, time.c, cleanup.c
 ├── Makefile
 └── README.md
 ````
 
 ---
 
-## 🔧 Installation & Compilation
+## 🛠 Compilation
 
-```bash
-git clone https://github.com/kitearuba/philo.git
-cd philo
-make
+Use only the Norm-compliant flags for submission:
+
+```make
+CFLAGS = -Wall -Wextra -Werror
 ```
 
-* Flags: `-Wall -Wextra -Werror -pthread`
-* Targets: `all`, `clean`, `fclean`, `re`
+During development, you can optionally enable:
+
+```make
+# CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address,undefined -O0
+```
+
+> These flags enable AddressSanitizer and debugging (recommended for development only).
 
 ---
 
 ## 🚀 Usage
 
 ```bash
-./philo number_of_philos time_to_die time_to_eat time_to_sleep [number_of_times_each_philo_must_eat]
+./philo number_of_philos time_to_die time_to_eat time_to_sleep [max_meals]
 ```
 
 ### Example:
@@ -101,54 +96,50 @@ make
 ./philo 5 800 200 200 7
 ```
 
-> Run with 5 philosophers who must each eat 7 times. If one doesn't eat within 800ms, they die.
+> 5 philosophers, die if they don't eat in 800ms, eat/sleep for 200ms, simulation ends after each eats 7 times.
 
-### Log Format:
+**Log Output:**
 
 ```
-113 1 has taken a fork
-113 1 is eating
+113 1 has taken a fork  
+113 1 is eating  
+...
 800 3 died
 ```
 
-> ℹ️ Log is formatted as: `timestamp philosopher_id action`
-> 🕐 Death must be printed **within 10ms** of the actual timeout.
+---
+
+## 🔍 How It Works
+
+* Each philosopher is a thread
+* Each fork is a mutex
+* A monitor thread checks:
+
+  * Has anyone starved? → Ends simulation
+  * Has everyone eaten enough? → Ends simulation
+* All threads use a shared, mutex-protected `simulation_ended` flag
+* Death messages are printed exactly once, on time
 
 ---
 
-## 🧠 How It Works (Simple Terms)
+## ⚙️ Design Highlights
 
-* Each philosopher is a **thread**
-* Forks are **mutexes** shared between neighbors
-* One **monitor thread** constantly checks:
-
-  * If any philosopher starved → ends simulation
-  * If all philosophers reached `max_meals` → ends simulation
-* Each philosopher has a **timestamp** of their last meal
-* When the `simulation_ended` flag is set, all threads stop cleanly
-
----
-
-## ⚙️ Technical Design Decisions
-
-* 🧠 Meal completion is tracked per philosopher via `is_fed` flags
-* 🎯 Simulation only ends via the **monitor thread**
-* ⏲️ Custom `ft_usleep` supports clean early exit checks
-* ♻️ Fed philosophers **continue looping** to avoid starvation patterns
-* 🧵 Fork locking is ordered to prevent deadlocks (left vs right first)
-* 💬 All log output is mutex-protected for terminal cleanliness
+* 🍽 Fork grabbing order alternates to prevent deadlock
+* 🧠 Philosophers may eat slightly beyond `max_meals` if already mid-cycle — this avoids starvation and is allowed
+* 💀 Simulation end is **centralized in the monitor thread** (not in routines)
+* 🧼 Memory and thread lifecycle fully controlled and leak-free
 
 ---
 
 ## 🔒 Locking Strategy
 
-| Purpose            | Mutex Used         |
-| ------------------ | ------------------ |
-| Printing messages  | `print_lock`       |
-| Ending simulation  | `simulation_lock`  |
-| Fork access        | One mutex per fork |
-| Updating fed count | `fed_lock`         |
-| Death logging      | `death_print_lock` |
+| Purpose         | Mutex Used         |
+| --------------- | ------------------ |
+| Printing logs   | `print_lock`       |
+| Shared sim flag | `simulation_lock`  |
+| Fork access     | One mutex per fork |
+| Meal tracking   | `fed_lock`         |
+| Death message   | `death_print_lock` |
 
 ---
 
@@ -158,19 +149,48 @@ make
 ./philo 1 800 200 200       # Dies (one fork)
 ./philo 5 800 200 200       # Runs until Ctrl+C
 ./philo 5 800 200 200 5     # Stops after all eat 5 times
-./philo 4 310 200 100       # Likely starvation (tight timing)
-./philo 1000 800 200 200    # Stress test (now stable!)
+./philo 4 310 200 100       # Risky (tight timing)
+./philo 200 800 200 200     # Stable limit (~200 philosophers)
+./philo 500 800 200 200     # May work, not always reliable
+./philo 1000 800 200 200    # Not recommended (timing issues)
 ```
 
-> ℹ️ If simulation stops after max\_meals, some philosophers may eat one extra time if they were mid-cycle — this is expected and allowed by the subject.
+> ⚠️ **Note:** Logs show accurate behavior even in tight timing. Philosophers are not forcefully blocked from re-eating after max meals to reduce starvation risk.
+
+---
+
+## 🔬 Testing Notes
+
+* ✅ Used `valgrind --leak-check=full --show-leak-kinds=all` to validate all memory operations
+* ✅ Also tested with `-fsanitize=address,undefined` and `-g` for early bug detection
+* 🚫 Did **not** use `valgrind` for performance testing, as it introduces major delays and false starvation
+* ✅ Input parsing includes a check to **strip trailing whitespace and malformed input** to prevent leaks or logic errors
+
+---
+
+## ⚙️ Optional Macros
+
+This project includes two macros to limit output verbosity based on philosopher count:
+
+```c
+#define PHILO_COLOR_CAP  100
+#define PHILO_PRINT_CAP  100
+```
+
+| Macro             | Purpose                                                  |
+| ----------------- | -------------------------------------------------------- |
+| `PHILO_COLOR_CAP` | Disables colored output if `num_philo > PHILO_COLOR_CAP` |
+| `PHILO_PRINT_CAP` | Skips meal summary if `num_philo > PHILO_PRINT_CAP`      |
+
+These are defined in `philo.h` and can be adjusted manually to fit your screen/logging preferences.
 
 ---
 
 ## 🙌 Acknowledgments
 
-* Thanks to **42 School** for the mental workout
-* Props to **everyone debugging segfaults at 3AM**
-* 🧹 Powered by `Valgrind`, `ASan`, and C patience
+* Thanks to 42 for teaching threads the hard way!
+* Huge respect to everyone debugging mutexes at midnight
+* Special thanks to Valgrind, AddressSanitizer, and custom `ft_usleep()` for keeping this clean and sharp
 
 ---
 
