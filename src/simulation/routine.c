@@ -43,12 +43,11 @@ static void	handle_forking(t_philosophers *philo)
 }
 
 /**
- * @brief Handles the eating phase and meal tracking logic.
+ * @brief Tracks meal completion and updates total_fed if needed.
  *
- * Locks both forks, logs the eating action, updates the last meal timestamp,
- * sleeps for the eating duration, and increments the meals eaten count.
- * Also updates the total_fed counter if the philosopher has reached the
- * required number of meals. Forks are unlocked at the end.
+ * If max_meals is enabled and the philosopher has eaten enough,
+ * this function marks the philosopher as fed and increments the
+ * shared total_fed counter (thread-safe with mutex).
  *
  * @param philo Pointer to the philosopher structure.
  */
@@ -66,12 +65,11 @@ static void	handle_meal_tracking(t_philosophers *philo)
 }
 
 /**
- * @brief Executes a full philosopher cycle of eating, sleeping, and thinking.
+ * @brief Executes a complete eat-sleep-think cycle for a philosopher.
  *
- * This function coordinates the philosopher’s routine by first checking
- * simulation status, then invoking the helper that handles eating and
- * meal tracking. If the simulation hasn’t ended, it proceeds with sleeping
- * and thinking phases.
+ * Performs eating (updates timestamp and meal count), runs meal tracking,
+ * and handles sleeping and thinking — with simulation checks at each stage.
+ * Forks are unlocked after eating, and actions are logged conditionally.
  *
  * @param philo Pointer to the philosopher structure.
  */
@@ -92,22 +90,22 @@ static void	do_cycle(t_philosophers *philo)
         return ;
     print_action(philo, "is sleeping");
     ft_usleep(philo->table->time_to_sleep, philo->table);
-    if (!is_simulation_ended(philo->table))
+    if (is_simulation_ended(philo->table))
         return ;
     print_action(philo, "is thinking");
 }
 
 /**
- * @brief Routine executed by each philosopher thread.
+ * @brief Main routine executed by each philosopher thread.
  *
- * If only one philosopher exists, waits holding one fork (and never eats).
- * Otherwise, enters a loop of:
- * - locking forks in safe order
- * - performing the eating/sleeping/thinking cycle
- * This loop runs until the simulation is marked as ended.
+ * If there is only one philosopher, they pick up one fork and wait
+ * (never eating). For multiple philosophers, it continuously loops:
+ * - acquiring forks in deadlock-safe order
+ * - performing the eat-sleep-think cycle
+ * until the simulation is marked as ended by the monitor.
  *
  * @param arg Pointer to the philosopher structure.
- * @return NULL when routine finishes.
+ * @return NULL when routine exits.
  */
 void	*philo_routine(void *arg)
 {
