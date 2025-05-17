@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 22:40:44 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:28:25 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ typedef struct s_philosophers
 {
 	int				id;
 	int				meals_eaten;
-    int				is_fed;
+	int				is_fed;
 	long			last_meal_time;
 	pthread_t		thread;
 	t_table			*table;

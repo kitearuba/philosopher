@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 21:51:13 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:27:51 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../../include/philo.h"
@@ -109,7 +109,7 @@ static void	init_philosopher_data(t_table *table)
 	{
 		table->philosophers[i].id = i + 1;
 		table->philosophers[i].meals_eaten = 0;
-	    table->philosophers[i].is_fed = 0;
+		table->philosophers[i].is_fed = 0;
 		table->philosophers[i].last_meal_time = 0;
 		table->philosophers[i].table = table;
 		i++;
