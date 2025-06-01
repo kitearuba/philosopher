@@ -34,8 +34,8 @@
 # define YELLOW			"\033[33m"
 # define BLUE			"\033[34m"
 # define CYAN			"\033[36m"
-# define PHILO_COLOR_CAP	100
-# define PHILO_PRINT_CAP	100
+# define PHILO_COLOR_CAP	0
+# define PHILO_PRINT_CAP	0
 
 /* ************************************************************************** */
 /*                                Structures                                  */
@@ -90,6 +90,6 @@ void		cleanup_simulation(t_table *table);
 int			is_simulation_ended(t_table *table);
 void		set_simulation_end(t_table *table);
 int			init_simulation(t_table *table, int argc, char **argv);
-int			safe_atoi(const char *str, int *error);
+int			safe_atoi(const char *str);
 
-#endif
+# endif //PHILO_H

@@ -25,24 +25,22 @@
  */
 static int	parse_args(t_table *table, int argc, char **argv)
 {
-	int	error;
-
 	if (argc < 5 || argc > 6)
 		return (printf("Error: wrong number of args\n"), 1);
-	table->num_philo = safe_atoi(argv[1], &error);
-	table->time_to_die = safe_atoi(argv[2], &error);
-	table->time_to_eat = safe_atoi(argv[3], &error);
-	table->time_to_sleep = safe_atoi(argv[4], &error);
+	table->num_philo = safe_atoi(argv[1]);
+	table->time_to_die = safe_atoi(argv[2]);
+	table->time_to_eat = safe_atoi(argv[3]);
+	table->time_to_sleep = safe_atoi(argv[4]);
 	table->log_colored = 1;
 	if (table->num_philo > PHILO_COLOR_CAP)
 		table->log_colored = 0;
 	if (argc == 6)
-		table->max_meals = safe_atoi(argv[5], &error);
+		table->max_meals = safe_atoi(argv[5]);
 	else
 		table->max_meals = -1;
-	if (error || table->num_philo < 1 || table->time_to_die < 1
+	if (table->num_philo < 1 || table->time_to_die < 1
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
-		|| (argc == 6 && table->max_meals < 0))
+		|| (argc == 6 && table->max_meals < 1))
 	{
 		return (printf("Error: wrong input\n"), 1);
 	}

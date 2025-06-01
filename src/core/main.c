@@ -79,11 +79,11 @@ int	main(int argc, char **argv)
 	pthread_t	monitor;
 	int			i;
 
+    i = 0;
 	table = malloc(sizeof(t_table));
 	if (!table)
 		return (1);
 	memset(table, 0, sizeof(t_table));
-	i = 0;
 	if (init_simulation(table, argc, argv))
 		return (exit_simulation(table, 1));
 	if (table->max_meals == 0)

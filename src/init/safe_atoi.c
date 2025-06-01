@@ -16,34 +16,32 @@
  * @brief Safely converts a string to an integer, with error checking.
  *
  * Handles whitespace, non-digit characters, and integer overflow. If the input
- * is invalid or overflows, sets `*error = 1` and returns 0.
+ * is invalid or overflows, and returns 0.
  *
  * @param str The string to convert.
- * @param error Pointer to an integer that will be set to 1 on error.
  * @return The converted integer, or 0 if an error occurred.
  */
-int	safe_atoi(const char *str, int *error)
+int	safe_atoi(const char *str)
 {
 	int		i;
 	long	result;
 
 	i = 0;
 	result = 0;
-	*error = 0;
-	if (!str || !str[0])
-		return (*error = 1, 0);
+	if (!str || !str[i])
+		return (0);
 	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
 		i++;
 	if (!str[i])
-		return (*error = 1, 0);
+		return (0);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		result = result * 10 + (str[i] - '0');
 		if (result > 2147483647)
-			return (*error = 1, 0);
+			return (0);
 		i++;
 	}
 	if (str[i] != '\0')
-		return (*error = 1, 0);
+		return (0);
 	return ((int)result);
 }
