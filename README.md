@@ -128,6 +128,8 @@ During development, you can optionally enable:
 * 🧠 Philosophers may eat slightly beyond `max_meals` if already mid-cycle — this avoids starvation and is allowed
 * 💀 Simulation end is **centralized in the monitor thread** (not in routines)
 * 🧼 Memory and thread lifecycle fully controlled and leak-free
+* 🔍 `safe_atoi()` is hardened to reject invalid inputs (non-digit, empty, signed, or overflow values)
+* 🔒 Simulation refuses to start if any input is 0 or malformed, including the optional `[max_meals]` argument
 
 ---
 
@@ -164,25 +166,28 @@ During development, you can optionally enable:
 * ✅ Used `valgrind --leak-check=full --show-leak-kinds=all` to validate all memory operations
 * ✅ Also tested with `-fsanitize=address,undefined` and `-g` for early bug detection
 * 🚫 Did **not** use `valgrind` for performance testing, as it introduces major delays and false starvation
-* ✅ Input parsing includes a check to **strip trailing whitespace and malformed input** to prevent leaks or logic errors
+* ✅ Input parsing uses a strict custom `safe_atoi()` implementation that rejects non-numeric, negative, or malformed input — including leading signs (`+`, `-`) and overflow. The simulation will only start if all arguments are valid positive integers.
 
 ---
 
 ## ⚙️ Optional Macros
 
-This project includes two macros to limit output verbosity based on philosopher count:
+This project includes two **optional macros** in `philo.h` to control output behavior.
+
+By **default**, they are set to:
 
 ```c
-#define PHILO_COLOR_CAP  100
-#define PHILO_PRINT_CAP  100
+#define PHILO_COLOR_CAP     0
+#define PHILO_PRINT_CAP     0
 ```
 
-| Macro             | Purpose                                                  |
-| ----------------- | -------------------------------------------------------- |
-| `PHILO_COLOR_CAP` | Disables colored output if `num_philo > PHILO_COLOR_CAP` |
-| `PHILO_PRINT_CAP` | Skips meal summary if `num_philo > PHILO_PRINT_CAP`      |
+| Macro             | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `PHILO_COLOR_CAP` | Enables color-coded logs only if `num_philo <= PHILO_COLOR_CAP`     |
+| `PHILO_PRINT_CAP` | Enables a meal summary at the end if `num_philo <= PHILO_PRINT_CAP` |
 
-These are defined in `philo.h` and can be adjusted manually to fit your screen/logging preferences.
+> 🛠️ Evaluators can modify these macros during review if they want to see colored output or a simulation summary.
+> ✅ They are **disabled by default** to ensure Deepthought compliance and clean log output.
 
 ---
 
