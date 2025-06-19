@@ -18,6 +18,7 @@ This project simulates the famous **Dining Philosophers Problem** using **POSIX 
 - [Usage](#usage)
 - [How It Works](#how-it-works)
 - [Design Highlights](#design-highlights)
+- [Enum-Based Architecture](#enum-based-architecture)
 - [Locking Strategy](#locking-strategy)
 - [Test Scenarios](#test-scenarios)
 - [Testing Notes](#testing-notes)
@@ -43,10 +44,11 @@ Philosophers sit around a table, each needing two forks to eat. But forks are sh
 - 🧵 Multithreaded philosophers via `pthread_create`
 - 🔐 Forks are protected with individual mutexes
 - 🕐 `ft_usleep` offers responsive sleep and early exit
-- 🧮 Max-meal detection handled via central monitor
-- 🧼 Clean memory, no leaks (validated with Valgrind & sanitizers)
 - 📋 Logs are thread-safe and color-coded (up to 100 philosophers)
-- 🛠️ Optional macros allow toggling log verbosity
+- 🧮 Max-meal detection handled via central monitor thread
+- 💬 Actions are logged using clean `enum` states (`t_state`)
+- ✅ All major functions return typed statuses (`t_status`)
+- 🧼 Clean memory, no leaks (validated with Valgrind & sanitizers)
 
 ---
 
@@ -119,6 +121,8 @@ During development, you can optionally enable:
   * Has everyone eaten enough? → Ends simulation
 * All threads use a shared, mutex-protected `simulation_ended` flag
 * Death messages are printed exactly once, on time
+* Action logging is handled via `print_action()` which uses a clean `t_state` enum
+* All major init and error-handling functions use `t_status` for explicit success/failure control
 
 ---
 
@@ -128,6 +132,55 @@ During development, you can optionally enable:
 * 🧠 Philosophers may eat slightly beyond `max_meals` if already mid-cycle — this avoids starvation and is allowed
 * 💀 Simulation end is **centralized in the monitor thread** (not in routines)
 * 🧼 Memory and thread lifecycle fully controlled and leak-free
+* 🔍 `safe_atoi()` is hardened to reject invalid inputs (non-digit, empty, signed, or overflow values)
+* 🔒 Simulation refuses to start if any input is 0 or malformed, including the optional `[max_meals]` argument
+* 🧩 `print_action()` is fully norm-compliant and uses helper functions to map states to strings and colors
+* 🚦 No ternary operators, initializer arrays, or non-compliant structures — fully validated by Norminette
+
+---
+
+## 🧬 Enum-Based Architecture
+
+To improve clarity, safety, and maintainability, this project uses two custom enums:
+
+### `t_state` (Philosopher States)
+
+```c
+typedef enum e_state
+{
+	STATE_EATING,
+	STATE_SLEEPING,
+	STATE_THINKING,
+	STATE_TAKEN_FORK,
+	STATE_DIED
+}	t_state;
+```
+
+Used throughout the simulation to represent philosopher actions. These states are:
+
+* Logged via `print_action(philo, STATE_EATING);`
+* Mapped to messages and colors using helper functions (`get_state_message()`, `get_state_color()`)
+* Replace fragile string comparisons and reduce error risk
+
+### `t_status` (Return Values)
+
+```c
+typedef enum e_status
+{
+	SUCCESS = 0,
+	FAILURE = 1
+}	t_status;
+```
+
+Used as return types for critical functions like:
+
+* `init_simulation()`
+* `parse_args()`
+* `allocate_simulation_memory()`
+
+This makes error handling clear and enforces consistent flow control.
+
+> 🎯 The enum system improves code validation, avoids typos, and follows 42 Norms by avoiding string magic, ternaries, and array initializers in function bodies.
 
 ---
 
@@ -164,25 +217,28 @@ During development, you can optionally enable:
 * ✅ Used `valgrind --leak-check=full --show-leak-kinds=all` to validate all memory operations
 * ✅ Also tested with `-fsanitize=address,undefined` and `-g` for early bug detection
 * 🚫 Did **not** use `valgrind` for performance testing, as it introduces major delays and false starvation
-* ✅ Input parsing includes a check to **strip trailing whitespace and malformed input** to prevent leaks or logic errors
+* ✅ Input parsing uses a strict custom `safe_atoi()` implementation that rejects non-numeric, negative, or malformed input — including leading signs (`+`, `-`) and overflow. The simulation will only start if all arguments are valid positive integers.
 
 ---
 
 ## ⚙️ Optional Macros
 
-This project includes two macros to limit output verbosity based on philosopher count:
+This project includes two **optional macros** in `philo.h` to control output behavior.
+
+By **default**, they are set to:
 
 ```c
-#define PHILO_COLOR_CAP  100
-#define PHILO_PRINT_CAP  100
+#define PHILO_COLOR_CAP     0
+#define PHILO_PRINT_CAP     0
 ```
 
-| Macro             | Purpose                                                  |
-| ----------------- | -------------------------------------------------------- |
-| `PHILO_COLOR_CAP` | Disables colored output if `num_philo > PHILO_COLOR_CAP` |
-| `PHILO_PRINT_CAP` | Skips meal summary if `num_philo > PHILO_PRINT_CAP`      |
+| Macro             | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `PHILO_COLOR_CAP` | Enables color-coded logs if `num_philo <= PHILO_COLOR_CAP`          |
+| `PHILO_PRINT_CAP` | Enables a meal summary at the end if `num_philo <= PHILO_PRINT_CAP` |
 
-These are defined in `philo.h` and can be adjusted manually to fit your screen/logging preferences.
+> 🛠️ Evaluators can modify these macros during review if they want to see colored output or a simulation summary.
+> ✅ They are **disabled by default** to ensure Deepthought compliance and clean log output.
 
 ---
 
@@ -191,6 +247,7 @@ These are defined in `philo.h` and can be adjusted manually to fit your screen/l
 * Thanks to 42 for teaching threads the hard way!
 * Huge respect to everyone debugging mutexes at midnight
 * Special thanks to Valgrind, AddressSanitizer, and custom `ft_usleep()` for keeping this clean and sharp
+* Project rewritten with a focus on safety, readability, and full 42 Norm compliance using enums and strict function structure.
 
 ---
 
