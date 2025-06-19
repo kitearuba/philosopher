@@ -41,5 +41,5 @@ void	lock_fork(t_philosophers *philo, int fork_index)
 {
 	pthread_mutex_lock(&philo->table->forks[fork_index]);
 	if (!is_simulation_ended(philo->table))
-		print_action(philo, "has taken a fork");
+		print_action(philo, STATE_TAKEN_FORK);
 }

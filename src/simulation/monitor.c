@@ -32,7 +32,7 @@ static int	check_death(t_table *table, int i)
 	{
 		set_simulation_end(table);
 		pthread_mutex_lock(&table->death_print_lock);
-		print_action(&table->philosophers[i], "died");
+		print_action(&table->philosophers[i], STATE_DIED);
 		pthread_mutex_unlock(&table->death_print_lock);
 		return (1);
 	}

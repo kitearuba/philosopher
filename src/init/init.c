@@ -23,10 +23,10 @@
  * @param argv Argument vector.
  * @return 0 on success, 1 on failure.
  */
-static int	parse_args(t_table *table, int argc, char **argv)
+static t_status	parse_args(t_table *table, int argc, char **argv)
 {
 	if (argc < 5 || argc > 6)
-		return (printf("Error: wrong number of args\n"), 1);
+		return (printf("Error: wrong number of args\n"), FAILURE);
 	table->num_philo = safe_atoi(argv[1]);
 	table->time_to_die = safe_atoi(argv[2]);
 	table->time_to_eat = safe_atoi(argv[3]);
@@ -42,9 +42,9 @@ static int	parse_args(t_table *table, int argc, char **argv)
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
 		|| (argc == 6 && table->max_meals < 1))
 	{
-		return (printf("Error: wrong input\n"), 1);
+		return (printf("Error: wrong input\n"), FAILURE);
 	}
-	return (0);
+	return (SUCCESS);
 }
 
 /**
@@ -56,15 +56,15 @@ static int	parse_args(t_table *table, int argc, char **argv)
  * @param table Pointer to the simulation's table structure.
  * @return 0 on success, 1 on allocation failure.
  */
-static int	allocate_simulation_memory(t_table *table)
+static t_status	allocate_simulation_memory(t_table *table)
 {
 	table->philosophers = malloc(sizeof(t_philosophers) * table->num_philo);
 	if (!table->philosophers)
-		return (printf("Error: malloc failed\n"), 1);
+		return (printf("Error: malloc failed\n"), FAILURE);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
-		return (printf("Error: malloc failed\n"), 1);
-	return (0);
+		return (printf("Error: malloc failed\n"), FAILURE);
+	return (SUCCESS);
 }
 
 /**
@@ -76,15 +76,15 @@ static int	allocate_simulation_memory(t_table *table)
  * @param table Pointer to the simulation's table structure.
  * @return 0 on success, 1 on mutex creation failure.
  */
-static int	init_mutexes(t_table *table)
+static t_status	init_mutexes(t_table *table)
 {
 	if (pthread_mutex_init(&table->print_lock, NULL)
 		|| pthread_mutex_init(&table->death_lock, NULL)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
 		|| pthread_mutex_init(&table->simulation_lock, NULL)
 		|| pthread_mutex_init(&table->death_print_lock, NULL))
-		return (printf("Error: mutex init failed\n"), 1);
-	return (0);
+		return (printf("Error: mutex init failed\n"), FAILURE);
+	return (SUCCESS);
 }
 
 /**
@@ -125,17 +125,17 @@ static void	init_philosopher_data(t_table *table)
  * @param argv Argument values.
  * @return 0 on success, 1 on failure.
  */
-int	init_simulation(t_table *table, int argc, char **argv)
+t_status	init_simulation(t_table *table, int argc, char **argv)
 {
-	if (parse_args(table, argc, argv))
-		return (1);
-	if (allocate_simulation_memory(table))
-		return (1);
-	if (init_mutexes(table))
-		return (1);
+	if (parse_args(table, argc, argv) != SUCCESS)
+		return (FAILURE);
+	if (allocate_simulation_memory(table) != SUCCESS)
+		return (FAILURE);
+	if (init_mutexes(table) != SUCCESS)
+		return (FAILURE);
 	table->someone_died = 0;
 	table->total_fed = 0;
 	table->simulation_ended = 0;
 	init_philosopher_data(table);
-	return (0);
+	return (SUCCESS);
 }

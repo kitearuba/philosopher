@@ -12,27 +12,20 @@
 
 #include "../../include/philo.h"
 
-/**
- * @brief Compares two strings for equality.
- *
- * Mimics the behavior of the standard strcmp function.
- * Compares each character in order and returns the difference
- * between the first pair of non-matching characters.
- *
- * @param s1 First string.
- * @param s2 Second string.
- * @return 0 if strings are equal, a non-zero integer otherwise.
- */
-static int	ft_strcmp(const char *s1, const char *s2)
+
+static const char   *get_state_message(t_state state)
 {
-	while (*s1 && *s2)
-	{
-		if (*s1 != *s2)
-			return ((unsigned char)*s1 - (unsigned char)*s2);
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
+    if (state == STATE_EATING)
+        return ("is eating");
+    if (state == STATE_SLEEPING)
+        return ("is sleeping");
+    if (state == STATE_THINKING)
+        return ("is sleeping");
+    if (state == STATE_TAKEN_FORK)
+        return ("has taken a fork");
+    if (state == STATE_DIED)
+        return ("dies");
+    return ("");
 }
 
 /**
@@ -41,15 +34,15 @@ static int	ft_strcmp(const char *s1, const char *s2)
  * @param message The action message (e.g., "is eating").
  * @return The ANSI color string.
  */
-static const char	*message_to_color(const char *message)
+static const char	*get_state_color(t_state state)
 {
-	if (!ft_strcmp(message, "is eating"))
+	if (state == STATE_EATING)
 		return (GREEN);
-	if (!ft_strcmp(message, "is sleeping"))
+	if (state == STATE_SLEEPING)
 		return (CYAN);
-	if (!ft_strcmp(message, "is thinking"))
+	if (state == STATE_THINKING)
 		return (BLUE);
-	if (!ft_strcmp(message, "died"))
+	if (state == STATE_DIED)
 		return (RED);
 	return (RESET);
 }
@@ -67,21 +60,23 @@ static const char	*message_to_color(const char *message)
  * @param philo Pointer to the philosopher.
  * @param message The action message (e.g., "is eating", "died").
  */
-void	print_action(t_philosophers *philo, const char *message)
+void	print_action(t_philosophers *philo, t_state state)
 {
 	long		timestamp;
+    const char  *message;
 	const char	*color;
 
-	if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
+	if (is_simulation_ended(philo->table) && state != STATE_DIED)
 		return ;
 	pthread_mutex_lock(&philo->table->print_lock);
-	if (is_simulation_ended(philo->table) && ft_strcmp(message, "died") != 0)
+	if (is_simulation_ended(philo->table) && state != STATE_DIED)
 	{
 		pthread_mutex_unlock(&philo->table->print_lock);
 		return ;
 	}
 	timestamp = get_time_in_ms() - philo->table->start_time;
-	color = message_to_color(message);
+    message = get_state_message(state);
+	color = get_state_color(state);
 	if (philo->table->log_colored)
 		printf("%ld %s%d%s %s%s%s\n", timestamp, YELLOW, philo->id,
 			RESET, color, message, RESET);

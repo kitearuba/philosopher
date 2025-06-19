@@ -80,19 +80,20 @@ static void	do_cycle(t_philosophers *philo)
 		unlock_forks(philo);
 		return ;
 	}
-	print_action(philo, "is eating");
-	philo->last_meal_time = get_time_in_ms();
+    print_action(philo, STATE_EATING);
+    philo->last_meal_time = get_time_in_ms();
 	ft_usleep(philo->table->time_to_eat, philo->table);
 	philo->meals_eaten++;
 	handle_meal_tracking(philo);
 	unlock_forks(philo);
 	if (is_simulation_ended(philo->table))
 		return ;
-	print_action(philo, "is sleeping");
+    print_action(philo, STATE_SLEEPING);
 	ft_usleep(philo->table->time_to_sleep, philo->table);
 	if (is_simulation_ended(philo->table))
 		return ;
-	print_action(philo, "is thinking");
+    print_action(philo, STATE_THINKING);
+
 }
 
 /**
@@ -115,7 +116,7 @@ void	*philo_routine(void *arg)
 	if (philo->table->num_philo == 1)
 	{
 		pthread_mutex_lock(&philo->table->forks[0]);
-		print_action(philo, "has taken a fork");
+	    print_action(philo, STATE_TAKEN_FORK);
 		while (!is_simulation_ended(philo->table))
 			ft_usleep(1, philo->table);
 		pthread_mutex_unlock(&philo->table->forks[0]);

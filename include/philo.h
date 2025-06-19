@@ -38,6 +38,25 @@
 # define PHILO_PRINT_CAP	0
 
 /* ************************************************************************** */
+/*                                   ENUM                                     */
+/* ************************************************************************** */
+
+typedef enum e_state
+{
+    STATE_EATING,
+    STATE_SLEEPING,
+    STATE_THINKING,
+    STATE_TAKEN_FORK,
+    STATE_DIED
+} t_state;
+
+typedef enum e_status
+{
+    SUCCESS = 0,
+    FAILURE = 1
+}	t_status;
+
+/* ************************************************************************** */
 /*                                Structures                                  */
 /* ************************************************************************** */
 
@@ -83,13 +102,13 @@ void		unlock_forks(t_philosophers *philo);
 void		lock_fork(t_philosophers *philo, int fork_index);
 long		get_time_in_ms(void);
 void		ft_usleep(int milliseconds, t_table *table);
-void		print_action(t_philosophers *philo, const char *message);
+void		print_action(t_philosophers *philo, t_state state);
 void		print_meal_summary(t_table *table);
 void		*monitor_death(void *arg);
 void		cleanup_simulation(t_table *table);
 int			is_simulation_ended(t_table *table);
 void		set_simulation_end(t_table *table);
-int			init_simulation(t_table *table, int argc, char **argv);
+t_status	init_simulation(t_table *table, int argc, char **argv);
 int			safe_atoi(const char *str);
 
 # endif //PHILO_H
