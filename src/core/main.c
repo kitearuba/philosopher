@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 11:21:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 21:50:36 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:23:02 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	main(int argc, char **argv)
 	pthread_t	monitor;
 	int			i;
 
-    i = 0;
+	i = 0;
 	table = malloc(sizeof(t_table));
 	if (!table)
 		return (1);

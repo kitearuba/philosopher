@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/17 17:28:25 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:22:13 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,17 @@
 
 typedef enum e_state
 {
-    STATE_EATING,
-    STATE_SLEEPING,
-    STATE_THINKING,
-    STATE_TAKEN_FORK,
-    STATE_DIED
-} t_state;
+	STATE_EATING,
+	STATE_SLEEPING,
+	STATE_THINKING,
+	STATE_TAKEN_FORK,
+	STATE_DIED
+}	t_state;
 
 typedef enum e_status
 {
-    SUCCESS = 0,
-    FAILURE = 1
+	SUCCESS = 0,
+	FAILURE = 1
 }	t_status;
 
 /* ************************************************************************** */
@@ -111,4 +111,4 @@ void		set_simulation_end(t_table *table);
 t_status	init_simulation(t_table *table, int argc, char **argv);
 int			safe_atoi(const char *str);
 
-# endif //PHILO_H
+#endif //PHILO_H

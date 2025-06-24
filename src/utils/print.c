@@ -6,26 +6,25 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 22:00:22 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:25:01 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/philo.h"
 
-
-static const char   *get_state_message(t_state state)
+static const char	*get_state_message(t_state state)
 {
-    if (state == STATE_EATING)
-        return ("is eating");
-    if (state == STATE_SLEEPING)
-        return ("is sleeping");
-    if (state == STATE_THINKING)
-        return ("is sleeping");
-    if (state == STATE_TAKEN_FORK)
-        return ("has taken a fork");
-    if (state == STATE_DIED)
-        return ("dies");
-    return ("");
+	if (state == STATE_EATING)
+		return ("is eating");
+	if (state == STATE_SLEEPING)
+		return ("is sleeping");
+	if (state == STATE_THINKING)
+		return ("is sleeping");
+	if (state == STATE_TAKEN_FORK)
+		return ("has taken a fork");
+	if (state == STATE_DIED)
+		return ("dies");
+	return ("");
 }
 
 /**
@@ -63,7 +62,7 @@ static const char	*get_state_color(t_state state)
 void	print_action(t_philosophers *philo, t_state state)
 {
 	long		timestamp;
-    const char  *message;
+	const char	*message;
 	const char	*color;
 
 	if (is_simulation_ended(philo->table) && state != STATE_DIED)
@@ -75,7 +74,7 @@ void	print_action(t_philosophers *philo, t_state state)
 		return ;
 	}
 	timestamp = get_time_in_ms() - philo->table->start_time;
-    message = get_state_message(state);
+	message = get_state_message(state);
 	color = get_state_color(state);
 	if (philo->table->log_colored)
 		printf("%ld %s%d%s %s%s%s\n", timestamp, YELLOW, philo->id,
