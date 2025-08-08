@@ -42,3 +42,22 @@ void	cleanup_simulation(t_table *table)
 	pthread_mutex_destroy(&table->simulation_lock);
 	pthread_mutex_destroy(&table->death_print_lock);
 }
+
+/**
+ * @brief Handles memory cleanup and exits the program.
+ *
+ * Frees all allocated resources, including mutexes and philosophers.
+ * Frees the main table structure itself.
+ * Returns the given exit code to the operating system.
+ *
+ * @param table Pointer to the simulation table.
+ * @param code Exit code to return.
+ * @return int Exit code.
+ */
+
+int	exit_simulation(t_table *table, int code)
+{
+	cleanup_simulation(table);
+	free(table);
+	return (code);
+}

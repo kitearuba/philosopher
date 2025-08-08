@@ -106,9 +106,11 @@ void		print_action(t_philosophers *philo, t_state state);
 void		print_meal_summary(t_table *table);
 void		*monitor_death(void *arg);
 void		cleanup_simulation(t_table *table);
+int			exit_simulation(t_table *table, int code);
 int			is_simulation_ended(t_table *table);
 void		set_simulation_end(t_table *table);
 t_status	init_simulation(t_table *table, int argc, char **argv);
 int			safe_atoi(const char *str);
+void		start_simulation(t_table *table);
 
 #endif //PHILO_H
