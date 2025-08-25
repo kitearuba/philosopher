@@ -30,16 +30,52 @@ int	is_simulation_ended(t_table *table)
 	return (status);
 }
 
+int	end_simulation_by_death(t_table *t, t_philosophers *who)
+{
+    int did_end;
+
+    pthread_mutex_lock(&t->simulation_lock);
+    if (!t->simulation_ended)
+    {
+        t->simulation_ended = 1;
+        did_end = 1;
+    }
+    else
+        did_end = 0;
+    pthread_mutex_unlock(&t->simulation_lock);
+    if (!did_end)
+        return (0);
+    print_action(who, STATE_DIED);
+    return (1);
+}
+
+int	end_simulation_all_fed(t_table *t)
+{
+    int did_end;
+
+    pthread_mutex_lock(&t->simulation_lock);
+    if (!t->simulation_ended)
+    {
+        t->simulation_ended = 1;
+        did_end = 1;
+    }
+    else
+        did_end = 0;
+    pthread_mutex_unlock(&t->simulation_lock);
+    return (did_end);
+}
+
 /**
  * @brief Marks the simulation as ended in a thread-safe way.
  *
  * Locks the simulation mutex, sets simulation_ended to 1, then unlocks.
  *
  * @param table Pointer to the simulation table.
- */
+
 void	set_simulation_end(t_table *table)
 {
 	pthread_mutex_lock(&table->simulation_lock);
 	table->simulation_ended = 1;
 	pthread_mutex_unlock(&table->simulation_lock);
 }
+*/

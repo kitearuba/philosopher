@@ -19,7 +19,7 @@ NAME 			= philo
 #                            Compiler and Flags                                #
 # **************************************************************************** #
 CC 				= cc
-CFLAGS			= -Wall -Wextra -Werror #-g -fsanitize=address,undefined -O0
+CFLAGS			= -Wall -Wextra -Werror #-g -fsanitize=thread -O3
 RM				= rm -rf
 
 # **************************************************************************** #

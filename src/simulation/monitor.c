@@ -25,15 +25,18 @@
  */
 static int	check_death(t_table *table, int i)
 {
-	long	time;
+	long	now;
+	long	last;
+	long	elapsed;
 
-	time = get_time_in_ms() - table->philosophers[i].last_meal_time;
-	if (time > table->time_to_die)
+	now = get_time_in_ms();
+    pthread_mutex_lock(&table->philosophers[i].state_lock);
+    last = table->philosophers[i].last_meal_time;
+    pthread_mutex_unlock(&table->philosophers[i].state_lock);
+	elapsed = now - last;
+	if (elapsed >= table->time_to_die)
 	{
-		set_simulation_end(table);
-		pthread_mutex_lock(&table->death_print_lock);
-		print_action(&table->philosophers[i], STATE_DIED);
-		pthread_mutex_unlock(&table->death_print_lock);
+		end_simulation_by_death(table, &table->philosophers[i]);
 		return (1);
 	}
 	return (0);
@@ -50,16 +53,17 @@ static int	check_death(t_table *table, int i)
  */
 static int	check_all_ate(t_table *table)
 {
-	if (table->max_meals > 0 && table->total_fed >= table->num_philo)
-	{
-		set_simulation_end(table);
-		pthread_mutex_lock(&table->print_lock);
-		printf("%ld 0 All philosophers have eaten enough\n",
-			get_time_in_ms() - table->start_time);
-		pthread_mutex_unlock(&table->print_lock);
-		return (1);
-	}
-	return (0);
+	int	all_fed;
+
+	if (table->max_meals <= 0)
+		return (0);
+	pthread_mutex_lock(&table->fed_lock);
+	all_fed = (table->total_fed >= table->num_philo);
+	pthread_mutex_unlock(&table->fed_lock);
+	if (!all_fed)
+		return (0);
+	end_simulation_all_fed(table);
+	return (1);
 }
 
 /**
