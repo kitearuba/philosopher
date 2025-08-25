@@ -1,88 +1,91 @@
+---
+
 # 🧠 Philosophers - Dining Simulation (42 Project)
 
 ![Philo](https://img.shields.io/badge/Philosophers-42Project-blue?style=flat-square) ![C](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Threads](https://img.shields.io/badge/Concurrency-Pthreads-yellow?style=flat-square)
 
-This project simulates the famous **Dining Philosophers Problem** using **POSIX threads and mutexes**, as part of the 42 core curriculum. The goal is to create a deadlock-free, starvation-safe system where philosophers eat, sleep, and think — using shared forks.
+This project simulates the classic **Dining Philosophers Problem** using **POSIX threads and mutexes**, as part of the 42 core curriculum. The goal is to create a deadlock-free, starvation-safe system where philosophers eat, sleep, and think — using shared forks.
 
-> ✅ This implementation is focused on the **mandatory multithreaded version**.  
+> ✅ This implementation is the **mandatory multithreaded version** (pthreads).
 > ❌ No bonus (processes/semaphores) included.
 
 ---
 
 ## 📑 Table of Contents
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Compilation](#compilation)
-- [Usage](#usage)
-- [How It Works](#how-it-works)
-- [Design Highlights](#design-highlights)
-- [Enum-Based Architecture](#enum-based-architecture)
-- [Locking Strategy](#locking-strategy)
-- [Test Scenarios](#test-scenarios)
-- [Testing Notes](#testing-notes)
-- [Optional Macros](#optional-macros)
-- [Acknowledgments](#acknowledgments)
-- [Author](#author)
+* [Introduction](#introduction)
+* [Features](#features)
+* [Project Structure](#project-structure)
+* [Compilation](#compilation)
+* [Usage](#usage)
+* [How It Works](#how-it-works)
+* [Design Highlights](#design-highlights)
+* [Locking Strategy](#locking-strategy)
+* [Improvements Over Early Versions](#improvements-over-early-versions)
+* [Testing & Debugging Notes](#testing--debugging-notes)
+* [Test Scenarios](#test-scenarios)
+* [Advanced Testing Examples](#advanced-testing-examples)
+* [Acknowledgments](#acknowledgments)
+* [Author](#author)
 
 ---
 
 ## 🧠 Introduction
 
-Philosophers sit around a table, each needing two forks to eat. But forks are shared — leading to potential **deadlocks** or **starvation**. Your job is to design a simulation that:
+Philosophers sit around a table, each needing two forks to eat. Forks are shared — leading to potential **deadlocks** or **starvation**. The simulation must:
 
-- Avoids deadlocks  
-- Tracks each philosopher's status  
-- Exits cleanly when a death or max-meal condition occurs  
-- Respects tight timing constraints (death must print within 10ms)
+* Avoid deadlocks
+* Track each philosopher's state
+* Exit cleanly when a death or *all philosophers fed* condition occurs
+* Respect strict timing (death printed ≤10ms late)
 
 ---
 
 ## ✨ Features
 
-- 🧵 Multithreaded philosophers via `pthread_create`
-- 🔐 Forks are protected with individual mutexes
-- 🕐 `ft_usleep` offers responsive sleep and early exit
-- 📋 Logs are thread-safe and color-coded (up to 100 philosophers)
-- 🧮 Max-meal detection handled via central monitor thread
-- 💬 Actions are logged using clean `enum` states (`t_state`)
-- ✅ All major functions return typed statuses (`t_status`)
-- 🧼 Clean memory, no leaks (validated with Valgrind & sanitizers)
+* 🧵 Each philosopher is a `pthread`
+* 🔐 One mutex per fork
+* 🕐 Custom `ft_usleep()` allows early interruption and precise timing
+* 📋 Thread-safe logging via a single `print_lock`
+* 🧮 **Max-meal** tracking via monitor thread and `fed_lock`
+* 💬 Action logging uses a clean `enum` (`t_state`) system
+* ✅ Leak-free and race-free (tested with Valgrind & sanitizers)
 
 ---
 
 ## 📁 Project Structure
 
-```bash
+```
 .
 ├── include/            # Header files (philo.h)
 ├── src/
 │   ├── core/           # main.c
 │   ├── init/           # init.c, safe_atoi.c
-│   ├── simulation/     # routine.c, monitor.c, fork_handling.c, simulation_end.c
+│   ├── simulation/     # routine.c, monitor.c, fork_handling.c, simulation_end.c, launch.c
 │   ├── utils/          # print.c, ft_usleep.c, time.c, cleanup.c
 ├── Makefile
 └── README.md
-````
+```
 
 ---
 
 ## 🛠 Compilation
 
-Use only the Norm-compliant flags for submission:
+Submission flags (Norm-only):
 
 ```make
 CFLAGS = -Wall -Wextra -Werror
 ```
 
-During development, you can optionally enable:
+Development/testing flags:
 
 ```make
 # CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address,undefined -O0
+# CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -O2   # ThreadSanitizer
 ```
 
-> These flags enable AddressSanitizer and debugging (recommended for development only).
+This project was tested at optimization levels `-O1`, `-O2`, and `-O3` without issues.
+Early debugging started at `-O0` with sanitizers, then moved to higher optimizations once stable.
 
 ---
 
@@ -92,166 +95,156 @@ During development, you can optionally enable:
 ./philo number_of_philos time_to_die time_to_eat time_to_sleep [max_meals]
 ```
 
-### Example:
+Example:
 
 ```bash
 ./philo 5 800 200 200 7
 ```
 
-> 5 philosophers, die if they don't eat in 800ms, eat/sleep for 200ms, simulation ends after each eats 7 times.
-
-**Log Output:**
-
-```
-113 1 has taken a fork  
-113 1 is eating  
-...
-800 3 died
-```
+> 5 philosophers, die if they don’t eat in 800ms, eat/sleep for 200ms, stop when each eats 7 times.
 
 ---
 
 ## 🔍 How It Works
 
-* Each philosopher is a thread
-* Each fork is a mutex
-* A monitor thread checks:
+* **Threads**: one per philosopher + one monitor
+* **Forks**: one mutex per fork
+* **Monitor**: checks continuously for:
 
-  * Has anyone starved? → Ends simulation
-  * Has everyone eaten enough? → Ends simulation
-* All threads use a shared, mutex-protected `simulation_ended` flag
-* Death messages are printed exactly once, on time
-* Action logging is handled via `print_action()` which uses a clean `t_state` enum
-* All major init and error-handling functions use `t_status` for explicit success/failure control
+  * Death (`elapsed >= time_to_die`)
+  * Completion (`total_fed == num_philo`)
+* **Unified End Flag**: all threads respect `simulation_ended` (protected by `simulation_lock`)
+* **Logging**: `print_action()` suppresses all prints after end, except the single death message
 
 ---
 
 ## ⚙️ Design Highlights
 
-* 🍽 Fork grabbing order alternates to prevent deadlock
-* 🧠 Philosophers may eat slightly beyond `max_meals` if already mid-cycle — this avoids starvation and is allowed
-* 💀 Simulation end is **centralized in the monitor thread** (not in routines)
-* 🧼 Memory and thread lifecycle fully controlled and leak-free
-* 🔍 `safe_atoi()` is hardened to reject invalid inputs (non-digit, empty, signed, or overflow values)
-* 🔒 Simulation refuses to start if any input is 0 or malformed, including the optional `[max_meals]` argument
-* 🧩 `print_action()` is fully norm-compliant and uses helper functions to map states to strings and colors
-* 🚦 No ternary operators, initializer arrays, or non-compliant structures — fully validated by Norminette
-
----
-
-## 🧬 Enum-Based Architecture
-
-To improve clarity, safety, and maintainability, this project uses two custom enums:
-
-### `t_state` (Philosopher States)
-
-```c
-typedef enum e_state
-{
-	STATE_EATING,
-	STATE_SLEEPING,
-	STATE_THINKING,
-	STATE_TAKEN_FORK,
-	STATE_DIED
-}	t_state;
-```
-
-Used throughout the simulation to represent philosopher actions. These states are:
-
-* Logged via `print_action(philo, STATE_EATING);`
-* Mapped to messages and colors using helper functions (`get_state_message()`, `get_state_color()`)
-* Replace fragile string comparisons and reduce error risk
-
-### `t_status` (Return Values)
-
-```c
-typedef enum e_status
-{
-	SUCCESS = 0,
-	FAILURE = 1
-}	t_status;
-```
-
-Used as return types for critical functions like:
-
-* `init_simulation()`
-* `parse_args()`
-* `allocate_simulation_memory()`
-
-This makes error handling clear and enforces consistent flow control.
-
-> 🎯 The enum system improves code validation, avoids typos, and follows 42 Norms by avoiding string magic, ternaries, and array initializers in function bodies.
+* 🍽 Alternating fork order prevents deadlock
+* 🧠 **New in this version:** philosophers immediately stop once they’ve reached `max_meals`, even if others are mid-action
+* 💀 Death and all-fed both funnel through **one centralized control method** (`end_simulation_*`)
+* 🔒 Mutex discipline prevents race conditions that were found in early drafts
+* 🧼 Memory and threads cleaned up in strict reverse order of initialization
 
 ---
 
 ## 🔒 Locking Strategy
 
-| Purpose         | Mutex Used         |
-| --------------- | ------------------ |
-| Printing logs   | `print_lock`       |
-| Shared sim flag | `simulation_lock`  |
-| Fork access     | One mutex per fork |
-| Meal tracking   | `fed_lock`         |
-| Death message   | `death_print_lock` |
+| Purpose         | Mutex Used        |
+| --------------- | ----------------- |
+| Printing logs   | `print_lock`      |
+| End flag        | `simulation_lock` |
+| Fork access     | One per fork      |
+| Meal tracking   | `fed_lock`        |
+| Per-philo state | `state_lock`      |
+
+---
+
+## 🔄 Improvements Over Early Versions
+
+During development, several issues were identified and fixed:
+
+* **Race conditions**:
+
+  * Earlier versions allowed philosophers to eat slightly beyond `max_meals`.
+  * Fixed by adding `is_fed` checks *before taking forks* and exiting the routine loop once fed.
+* **Unified termination**:
+
+  * Death and max-meals are now controlled by the same logic (`simulation_end`), instead of separate ad-hoc flags.
+* **Print suppression**:
+
+  * Previously, philosophers could still print actions after the simulation had ended.
+  * Now, `print_action()` enforces a final gate: only a death message may appear after end.
+* **Testing methodology**:
+
+  * The first README only mentioned Valgrind leak checks.
+  * In this version, the program has been tested with **Valgrind, AddressSanitizer, UndefinedBehaviorSanitizer, and ThreadSanitizer**.
+  * ThreadSanitizer initially showed data races; additional locks and `is_fed` gating fixed them.
+* **Optimization levels**:
+
+  * Verified under `-O1`, `-O2`, and `-O3`.
+  * Some earlier issues only appeared when optimizations were enabled — now stable across all.
+
+---
+
+## 🔬 Testing & Debugging Notes
+
+* ✅ **Valgrind**:
+
+  ```bash
+  valgrind --leak-check=full --show-leak-kinds=all ./philo 5 800 200 200
+  ```
+
+  → No leaks, no invalid memory usage.
+
+* ✅ **Sanitizers**:
+
+  * `-fsanitize=address,undefined` → caught invalid frees and undefined behavior early
+  * `-fsanitize=thread` → exposed hidden race conditions, now fully resolved
+
+* 🖥️ **Home computer issue**:
+  ThreadSanitizer sometimes failed with:
+
+  ```
+  FATAL: ThreadSanitizer: unexpected memory mapping
+  ```
+
+  This was solved with **ASLR disabled**:
+
+  ```bash
+  setarch "$(uname -m)" -R ./philo args...
+  ```
+
+  On 42 school machines, ThreadSanitizer runs without this workaround.
 
 ---
 
 ## 🧪 Test Scenarios
 
 ```bash
-./philo 1 800 200 200       # Dies (one fork)
-./philo 5 800 200 200       # Runs until Ctrl+C
-./philo 5 800 200 200 5     # Stops after all eat 5 times
-./philo 4 310 200 100       # Risky (tight timing)
-./philo 200 800 200 200     # Stable limit (~200 philosophers)
-./philo 500 800 200 200     # May work, not always reliable
-./philo 1000 800 200 200    # Not recommended (timing issues)
+./philo 1 800 200 200        # 1 philosopher -> dies
+./philo 5 800 200 200        # Runs until Ctrl+C
+./philo 5 800 200 200 5      # Stops after all eat 5 meals
+./philo 4 310 200 100        # Tight timing (some deaths)
+./philo 200 800 200 200      # Stress test ~200 philosophers
 ```
-
-> ⚠️ **Note:** Logs show accurate behavior even in tight timing. Philosophers are not forcefully blocked from re-eating after max meals to reduce starvation risk.
 
 ---
 
-## 🔬 Testing Notes
+## 📊 Advanced Testing Examples
 
-* ✅ Used `valgrind --leak-check=full --show-leak-kinds=all` to validate all memory operations
-* ✅ Also tested with `-fsanitize=address,undefined` and `-g` for early bug detection
-* 🚫 Did **not** use `valgrind` for performance testing, as it introduces major delays and false starvation
-* ✅ Input parsing uses a strict custom `safe_atoi()` implementation that rejects non-numeric, negative, or malformed input — including leading signs (`+`, `-`) and overflow. The simulation will only start if all arguments are valid positive integers.
+### Verify all philosophers ate exactly N meals
 
----
-
-## ⚙️ Optional Macros
-
-This project includes two **optional macros** in `philo.h` to control output behavior.
-
-By **default**, they are set to:
-
-```c
-#define PHILO_COLOR_CAP     0
-#define PHILO_PRINT_CAP     0
+```bash
+setarch "$(uname -m)" -R ./philo 5 300 90 90 19 \
+  | grep "is eating" | awk '{print $2}' | sort | uniq -c
 ```
 
-| Macro             | Purpose                                                             |
-| ----------------- | ------------------------------------------------------------------- |
-| `PHILO_COLOR_CAP` | Enables color-coded logs if `num_philo <= PHILO_COLOR_CAP`          |
-| `PHILO_PRINT_CAP` | Enables a meal summary at the end if `num_philo <= PHILO_PRINT_CAP` |
+Sample output:
 
-> 🛠️ Evaluators can modify these macros during review if they want to see colored output or a simulation summary.
-> ✅ They are **disabled by default** to ensure Deepthought compliance and clean log output.
+```
+     19 1
+     19 2
+     19 3
+     19 4
+     19 5
+```
+
+Confirms that each philosopher ate **exactly 19 times**, with no over-eating after end.
 
 ---
 
 ## 🙌 Acknowledgments
 
-* Thanks to 42 for teaching threads the hard way!
-* Huge respect to everyone debugging mutexes at midnight
-* Special thanks to Valgrind, AddressSanitizer, and custom `ft_usleep()` for keeping this clean and sharp
-* Project rewritten with a focus on safety, readability, and full 42 Norm compliance using enums and strict function structure.
+* 🕒 Countless tests with **Valgrind, sanitizers, and setarch**
+* 💡 Thanks to the 42 community for debugging mutex madness at 3 AM
+* ✨ Final version focuses on **clarity, strict Norm compliance, centralized control, and defense-ready reasoning**
 
 ---
 
 ## 👨‍💻 Author
 
-* **Christian (chrrodri)**
-  GitHub: [@kitearuba](https://github.com/kitearuba)
+**Christian (chrrodri)**
+GitHub: [@kitearuba](https://github.com/kitearuba)
+
+---
