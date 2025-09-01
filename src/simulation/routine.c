@@ -12,16 +12,6 @@
 
 #include "../../include/philo.h"
 
-static int  is_philo_fed(t_philosophers *p)
-{
-    int fed;
-
-    pthread_mutex_lock(&p->table->fed_lock);
-    fed = p->is_fed;
-    pthread_mutex_unlock(&p->table->fed_lock);
-    return (fed);
-}
-
 /**
  * @brief Locks forks in an order that reduces deadlocks.
  *
@@ -38,27 +28,17 @@ static void	handle_forking(t_philosophers *philo)
 
 	left = philo->id - 1;
 	right = philo->id % philo->table->num_philo;
-	if (is_simulation_ended(philo->table) || is_philo_fed(philo))
-		return ;
 	if (philo->id % 2 == 0)
 	{
 		lock_fork(philo, right);
-		if (is_simulation_ended(philo->table) || is_philo_fed(philo))
-		{
-			unlock_forks(philo);
-			return ;
-		}
-		lock_fork(philo, left);
+		if (!is_simulation_ended(philo->table))
+			lock_fork(philo, left);
 	}
 	else
 	{
 		lock_fork(philo, left);
-		if (!is_simulation_ended(philo->table) || is_philo_fed(philo))
-		{
-			unlock_forks(philo);
-			return ;
-		}
-		lock_fork(philo, right);
+		if (!is_simulation_ended(philo->table))
+			lock_fork(philo, right);
 	}
 }
 
@@ -73,15 +53,10 @@ static void	handle_forking(t_philosophers *philo)
  */
 static void	handle_meal_tracking(t_philosophers *philo)
 {
-    int    eaten;
-
 	if (philo->table->max_meals <= 0)
 		return ;
-    pthread_mutex_lock(&philo->state_lock);
-    eaten = philo->meals_eaten;
-    pthread_mutex_unlock(&philo->state_lock);
 	pthread_mutex_lock(&philo->table->fed_lock);
-	if (!philo->is_fed && eaten >= philo->table->max_meals)
+	if (!philo->is_fed && philo->meals_eaten >= philo->table->max_meals)
 	{
 		philo->is_fed = 1;
 		philo->table->total_fed++;
@@ -100,19 +75,15 @@ static void	handle_meal_tracking(t_philosophers *philo)
  */
 static void	do_cycle(t_philosophers *philo)
 {
-	if (is_simulation_ended(philo->table) || is_philo_fed(philo))
+	if (is_simulation_ended(philo->table))
 	{
 		unlock_forks(philo);
 		return ;
 	}
 	print_action(philo, STATE_EATING);
-    pthread_mutex_lock(&philo->state_lock);
 	philo->last_meal_time = get_time_in_ms();
-    pthread_mutex_unlock(&philo->state_lock);
 	ft_usleep(philo->table->time_to_eat, philo->table);
-    pthread_mutex_lock(&philo->state_lock);
 	philo->meals_eaten++;
-    pthread_mutex_unlock(&philo->state_lock);
 	handle_meal_tracking(philo);
 	unlock_forks(philo);
 	if (is_simulation_ended(philo->table))
@@ -152,8 +123,6 @@ void	*philo_routine(void *arg)
 	}
 	while (!is_simulation_ended(philo->table))
 	{
-		if (philo->table->max_meals > 0 && is_philo_fed(philo))
-        	break;
 		handle_forking(philo);
 		do_cycle(philo);
 	}

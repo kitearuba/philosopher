@@ -25,6 +25,19 @@
 # include <string.h>
 
 /* ************************************************************************** */
+/*                           Constants and Colors                             */
+/* ************************************************************************** */
+
+# define RESET			"\033[0m"
+# define RED			"\033[31m"
+# define GREEN			"\033[32m"
+# define YELLOW			"\033[33m"
+# define BLUE			"\033[34m"
+# define CYAN			"\033[36m"
+# define PHILO_COLOR_CAP	0
+# define PHILO_PRINT_CAP	0
+
+/* ************************************************************************** */
 /*                                   ENUM                                     */
 /* ************************************************************************** */
 
@@ -56,9 +69,6 @@ typedef struct s_philosophers
 	int				is_fed;
 	long			last_meal_time;
 	pthread_t		thread;
-    pthread_mutex_t state_lock;
-    int             has_left_fork;
-    int             has_right_fork;
 	t_table			*table;
 }	t_philosophers;
 
@@ -72,45 +82,35 @@ typedef struct s_table
 	int				total_fed;
 	int				someone_died;
 	int				simulation_ended;
+	int				log_colored;
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
+	pthread_mutex_t	death_print_lock;
+	pthread_mutex_t	death_lock;
 	pthread_mutex_t	fed_lock;
 	pthread_mutex_t	simulation_lock;
 	t_philosophers	*philosophers;
 }	t_table;
 
 /* ************************************************************************** */
-/*                                 Prototypes                                  */
+/*                                 Functions                                  */
 /* ************************************************************************** */
 
-/* threads */
 void		*philo_routine(void *arg);
-void		*monitor_death(void *arg);
-
-/* forks */
-void		lock_fork(t_philosophers *philo, int fork_index);
 void		unlock_forks(t_philosophers *philo);
-
-/* time / sleep */
+void		lock_fork(t_philosophers *philo, int fork_index);
 long		get_time_in_ms(void);
 void		ft_usleep(int milliseconds, t_table *table);
-
-/* printing */
 void		print_action(t_philosophers *philo, t_state state);
-
-/* lifecycle / end */
-int			is_simulation_ended(t_table *table);
-int			end_simulation_by_death(t_table *t, t_philosophers *who);
-int			end_simulation_all_fed(t_table *t);
-
-/* init / teardown */
-t_status	init_simulation(t_table *table, int argc, char **argv);
-void		start_simulation(t_table *table);
+void		print_meal_summary(t_table *table);
+void		*monitor_death(void *arg);
 void		cleanup_simulation(t_table *table);
 int			exit_simulation(t_table *table, int code);
-
-/* utils */
+int			is_simulation_ended(t_table *table);
+void		set_simulation_end(t_table *table);
+t_status	init_simulation(t_table *table, int argc, char **argv);
 int			safe_atoi(const char *str);
+void		start_simulation(t_table *table);
 
 #endif //PHILO_H

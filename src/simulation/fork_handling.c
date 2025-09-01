@@ -12,32 +12,34 @@
 
 #include "../../include/philo.h"
 
-void lock_fork(t_philosophers *philo, int fork_index)
+/**
+ * @brief Unlocks both forks held by a philosopher.
+ *
+ * This function releases the mutexes for the left and right forks
+ * associated with the given philosopher. It is called after eating
+ * or when the simulation ends prematurely.
+ *
+ * @param philo Pointer to the philosopher structure.
+ */
+void	unlock_forks(t_philosophers *philo)
 {
-    int left  = philo->id - 1;
-    int right = philo->id % philo->table->num_philo;
-
-    pthread_mutex_lock(&philo->table->forks[fork_index]);
-    if (fork_index == left)
-        philo->has_left_fork = 1;      // NEW
-    else if (fork_index == right)
-        philo->has_right_fork = 1;     // NEW
-
-    if (!is_simulation_ended(philo->table))
-        print_action(philo, STATE_TAKEN_FORK);
+	pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
+	pthread_mutex_unlock(&philo->table->forks[
+		philo->id % philo->table->num_philo]);
 }
 
-void unlock_forks(t_philosophers *philo)
+/**
+ * @brief Locks a specific fork and logs the action.
+ *
+ * Locks the fork at the given index. If the simulation has not ended,
+ * prints a log message indicating the fork has been taken.
+ *
+ * @param philo Pointer to the philosopher structure.
+ * @param fork_index Index of the fork to lock.
+ */
+void	lock_fork(t_philosophers *philo, int fork_index)
 {
-    int left  = philo->id - 1;
-    int right = philo->id % philo->table->num_philo;
-
-    if (philo->has_right_fork) {                           // NEW
-        pthread_mutex_unlock(&philo->table->forks[right]);
-        philo->has_right_fork = 0;
-    }
-    if (philo->has_left_fork) {                            // NEW
-        pthread_mutex_unlock(&philo->table->forks[left]);
-        philo->has_left_fork = 0;
-    }
+	pthread_mutex_lock(&philo->table->forks[fork_index]);
+	if (!is_simulation_ended(philo->table))
+		print_action(philo, STATE_TAKEN_FORK);
 }

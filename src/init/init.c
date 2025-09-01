@@ -31,6 +31,9 @@ static t_status	parse_args(t_table *table, int argc, char **argv)
 	table->time_to_die = safe_atoi(argv[2]);
 	table->time_to_eat = safe_atoi(argv[3]);
 	table->time_to_sleep = safe_atoi(argv[4]);
+	table->log_colored = 1;
+	if (table->num_philo > PHILO_COLOR_CAP)
+		table->log_colored = 0;
 	if (argc == 6)
 		table->max_meals = safe_atoi(argv[5]);
 	else
@@ -60,11 +63,7 @@ static t_status	allocate_simulation_memory(t_table *table)
 		return (printf("Error: malloc failed\n"), FAILURE);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
-	{
-		free(table->philosophers);
-		table->philosophers = NULL;
 		return (printf("Error: malloc failed\n"), FAILURE);
-	}
 	return (SUCCESS);
 }
 
@@ -80,8 +79,10 @@ static t_status	allocate_simulation_memory(t_table *table)
 static t_status	init_mutexes(t_table *table)
 {
 	if (pthread_mutex_init(&table->print_lock, NULL)
+		|| pthread_mutex_init(&table->death_lock, NULL)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
-		|| pthread_mutex_init(&table->simulation_lock, NULL))
+		|| pthread_mutex_init(&table->simulation_lock, NULL)
+		|| pthread_mutex_init(&table->death_print_lock, NULL))
 		return (printf("Error: mutex init failed\n"), FAILURE);
 	return (SUCCESS);
 }
@@ -108,9 +109,6 @@ static void	init_philosopher_data(t_table *table)
 		table->philosophers[i].meals_eaten = 0;
 		table->philosophers[i].is_fed = 0;
 		table->philosophers[i].last_meal_time = 0;
-	    pthread_mutex_init(&table->philosophers[i].state_lock, NULL);
-	    table->philosophers[i].has_left_fork = 0;
-	    table->philosophers[i].has_right_fork = 0;
 		table->philosophers[i].table = table;
 		i++;
 	}
@@ -135,6 +133,7 @@ t_status	init_simulation(t_table *table, int argc, char **argv)
 		return (FAILURE);
 	if (init_mutexes(table) != SUCCESS)
 		return (FAILURE);
+	table->someone_died = 0;
 	table->total_fed = 0;
 	table->simulation_ended = 0;
 	init_philosopher_data(table);
