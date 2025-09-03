@@ -13,13 +13,8 @@
 #include "../../include/philo.h"
 
 /**
- * @brief Locks forks in an order that reduces deadlocks.
- *
- * Even-numbered philosophers pick up the right fork first,
- * while odd-numbered philosophers pick up the left fork first.
- * This strategy helps avoid circular wait and deadlock scenarios.
- *
- * @param philo Pointer to the philosopher structure.
+ * Locks forks in an order that reduces deadlocks.
+ * Even IDs: right then left. Odd IDs: left then right.
  */
 static void	handle_forking(t_philosophers *philo)
 {
@@ -28,50 +23,69 @@ static void	handle_forking(t_philosophers *philo)
 
 	left = philo->id - 1;
 	right = philo->id % philo->table->num_philo;
+
+	if (is_simulation_ended(philo->table))
+		return;
+
 	if (philo->id % 2 == 0)
 	{
 		lock_fork(philo, right);
-		if (!is_simulation_ended(philo->table))
-			lock_fork(philo, left);
+		if (is_simulation_ended(philo->table))
+		{
+			unlock_forks(philo);
+			return ;
+		}
+		lock_fork(philo, left);
 	}
 	else
 	{
 		lock_fork(philo, left);
-		if (!is_simulation_ended(philo->table))
-			lock_fork(philo, right);
+		/* FIX: bail only if the simulation ENDED (the old code had !ended) */
+		if (is_simulation_ended(philo->table))
+		{
+			unlock_forks(philo);
+			return ;
+		}
+		lock_fork(philo, right);
 	}
 }
 
-/**
- * @brief Tracks meal completion and updates total_fed if needed.
- *
- * If max_meals is enabled and the philosopher has eaten enough,
- * this function marks the philosopher as fed and increments the
- * shared total_fed counter (thread-safe with mutex).
- *
- * @param philo Pointer to the philosopher structure.
+/* After finishing a meal, if max_meals > 0 and this philo reached it,
+ * mark as fed and increment total_fed. If that makes everyone fed,
+ * flip simulation_ended immediately (like a death), so printing stops at once.
  */
-static void	handle_meal_tracking(t_philosophers *philo)
+static void handle_meal_tracking(t_philosophers *philo)
 {
-	if (philo->table->max_meals <= 0)
-		return ;
-	pthread_mutex_lock(&philo->table->fed_lock);
-	if (!philo->is_fed && philo->meals_eaten >= philo->table->max_meals)
-	{
-		philo->is_fed = 1;
-		philo->table->total_fed++;
-	}
-	pthread_mutex_unlock(&philo->table->fed_lock);
+    int eaten;
+    int all_fed_now = 0;
+
+    if (philo->table->max_meals <= 0)
+        return;
+
+    /* Read meals_eaten under state lock */
+    pthread_mutex_lock(&philo->state_lock);
+    eaten = philo->meals_eaten;
+    pthread_mutex_unlock(&philo->state_lock);
+
+    /* Update fed counters under fed_lock */
+    pthread_mutex_lock(&philo->table->fed_lock);
+    if (!philo->is_fed && eaten >= philo->table->max_meals)
+    {
+        philo->is_fed = 1;
+        philo->table->total_fed++;
+        if (philo->table->total_fed >= philo->table->num_philo)
+            all_fed_now = 1;
+    }
+    pthread_mutex_unlock(&philo->table->fed_lock);
+
+    /* If we just reached "everyone fed", end now (no print). */
+    if (all_fed_now)
+        end_simulation_all_fed(philo->table);
 }
 
+
 /**
- * @brief Executes a complete eat-sleep-think cycle for a philosopher.
- *
- * Performs eating (updates timestamp and meal count), runs meal tracking,
- * and handles sleeping and thinking — with simulation checks at each stage.
- * Forks are unlocked after eating, and actions are logged conditionally.
- *
- * @param philo Pointer to the philosopher structure.
+ * One eat-sleep-think cycle with end checks between phases.
  */
 static void	do_cycle(t_philosophers *philo)
 {
@@ -81,9 +95,13 @@ static void	do_cycle(t_philosophers *philo)
 		return ;
 	}
 	print_action(philo, STATE_EATING);
+	pthread_mutex_lock(&philo->state_lock);
 	philo->last_meal_time = get_time_in_ms();
+	pthread_mutex_unlock(&philo->state_lock);
 	ft_usleep(philo->table->time_to_eat, philo->table);
+	pthread_mutex_lock(&philo->state_lock);
 	philo->meals_eaten++;
+	pthread_mutex_unlock(&philo->state_lock);
 	handle_meal_tracking(philo);
 	unlock_forks(philo);
 	if (is_simulation_ended(philo->table))
@@ -92,26 +110,26 @@ static void	do_cycle(t_philosophers *philo)
 	ft_usleep(philo->table->time_to_sleep, philo->table);
 	if (is_simulation_ended(philo->table))
 		return ;
+    if ((philo->table->num_philo % 2) == 1)
+    {
+        int pad = philo->table->time_to_eat - philo->table->time_to_sleep + 1;
+        if (pad < 1)
+            pad = 1; /* 1ms is enough to break symmetry */
+        ft_usleep(pad, philo->table);
+    }
 	print_action(philo, STATE_THINKING);
 }
 
 /**
- * @brief Main routine executed by each philosopher thread.
- *
- * If there is only one philosopher, they pick up one fork and wait
- * (never eating). For multiple philosophers, it continuously loops:
- * - acquiring forks in deadlock-safe order
- * - performing the eat-sleep-think cycle
- * until the simulation is marked as ended by the monitor.
- *
- * @param arg Pointer to the philosopher structure.
- * @return NULL when routine exits.
+ * Thread entry: loop until the monitor flips the end flag.
+ * Never gate by max_meals here; only end-flag matters.
  */
 void	*philo_routine(void *arg)
 {
 	t_philosophers	*philo;
 
 	philo = (t_philosophers *)arg;
+
 	if (philo->table->num_philo == 1)
 	{
 		pthread_mutex_lock(&philo->table->forks[0]);
@@ -121,6 +139,21 @@ void	*philo_routine(void *arg)
 		pthread_mutex_unlock(&philo->table->forks[0]);
 		return (NULL);
 	}
+    if (philo->table->num_philo > 1)
+    {
+        if ((philo->table->num_philo % 2) == 1)
+        {
+            /* Odd N: even IDs wait a full eat time */
+            if ((philo->id % 2) == 0)
+                ft_usleep(philo->table->time_to_eat, philo->table);
+        }
+        else
+        {
+            /* Even N: even IDs wait half eat time */
+            if ((philo->id % 2) == 0)
+                ft_usleep(philo->table->time_to_eat / 2, philo->table);
+        }
+    }
 	while (!is_simulation_ended(philo->table))
 	{
 		handle_forking(philo);

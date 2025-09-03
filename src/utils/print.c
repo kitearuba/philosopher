@@ -19,31 +19,12 @@ static const char	*get_state_message(t_state state)
 	if (state == STATE_SLEEPING)
 		return ("is sleeping");
 	if (state == STATE_THINKING)
-		return ("is sleeping");
+		return ("is thinking");
 	if (state == STATE_TAKEN_FORK)
 		return ("has taken a fork");
 	if (state == STATE_DIED)
 		return ("dies");
 	return ("");
-}
-
-/**
- * @brief Maps action message to its corresponding color.
- *
- * @param message The action message (e.g., "is eating").
- * @return The ANSI color string.
- */
-static const char	*get_state_color(t_state state)
-{
-	if (state == STATE_EATING)
-		return (GREEN);
-	if (state == STATE_SLEEPING)
-		return (CYAN);
-	if (state == STATE_THINKING)
-		return (BLUE);
-	if (state == STATE_DIED)
-		return (RED);
-	return (RESET);
 }
 
 /**
@@ -61,51 +42,29 @@ static const char	*get_state_color(t_state state)
  */
 void	print_action(t_philosophers *philo, t_state state)
 {
-	long		timestamp;
-	const char	*message;
-	const char	*color;
+    long		timestamp;
+    const char	*message;
+    t_table    *t;
 
-	if (is_simulation_ended(philo->table) && state != STATE_DIED)
-		return ;
-	pthread_mutex_lock(&philo->table->print_lock);
-	if (is_simulation_ended(philo->table) && state != STATE_DIED)
-	{
-		pthread_mutex_unlock(&philo->table->print_lock);
-		return ;
-	}
-	timestamp = get_time_in_ms() - philo->table->start_time;
-	message = get_state_message(state);
-	color = get_state_color(state);
-	if (philo->table->log_colored)
-		printf("%ld %s%d%s %s%s%s\n", timestamp, YELLOW, philo->id,
-			RESET, color, message, RESET);
-	else
-		printf("%ld %d %s\n", timestamp, philo->id, message);
-	pthread_mutex_unlock(&philo->table->print_lock);
-}
-
-/**
- * @brief Prints how many times each philosopher has eaten.
- *
- * This function is called at the end of the simulation to provide a summary.
- * It loops through all philosophers and reports their meal count.
- *
- * @param table Pointer to the shared simulation data.
- */
-void	print_meal_summary(t_table *table)
-{
-	int	i;
-
-	i = 0;
-	printf("\nSimulation ended. Meal summary:\n");
-	while (i < table->num_philo)
-	{
-		printf("Philosopher %d ate %d ", table->philosophers[i].id,
-			table->philosophers[i].meals_eaten);
-		if (table->philosophers[i].meals_eaten == 1)
-			printf("time\n");
-		else
-			printf("times\n");
-		i++;
-	}
+    t = philo->table;
+    pthread_mutex_lock(&t->simulation_lock);
+    if (t->simulation_ended && state != STATE_DIED)
+    {
+        pthread_mutex_unlock(&t->simulation_lock);
+        return ;
+    }
+    pthread_mutex_unlock(&t->simulation_lock);
+    pthread_mutex_lock(&t->print_lock);
+    pthread_mutex_lock(&t->simulation_lock);
+    if (t->simulation_ended &&  state != STATE_DIED)
+    {
+        pthread_mutex_unlock(&t->simulation_lock);
+        pthread_mutex_unlock(&t->print_lock);
+        return ;
+    }
+    pthread_mutex_unlock(&t->simulation_lock);
+    timestamp = get_time_in_ms() - t->start_time;
+    message = get_state_message(state);
+    printf("%ld %d %s\n", timestamp, philo->id, message);
+    pthread_mutex_unlock(&t->print_lock);
 }

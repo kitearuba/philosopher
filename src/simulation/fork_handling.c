@@ -12,34 +12,41 @@
 
 #include "../../include/philo.h"
 
-/**
- * @brief Unlocks both forks held by a philosopher.
- *
- * This function releases the mutexes for the left and right forks
- * associated with the given philosopher. It is called after eating
- * or when the simulation ends prematurely.
- *
- * @param philo Pointer to the philosopher structure.
- */
-void	unlock_forks(t_philosophers *philo)
+void    lock_fork(t_philosophers *philo, int fork_index)
 {
-	pthread_mutex_unlock(&philo->table->forks[philo->id - 1]);
-	pthread_mutex_unlock(&philo->table->forks[
-		philo->id % philo->table->num_philo]);
+    int left;
+    int right;
+
+    left = philo->id - 1;
+    right = philo->id % philo->table->num_philo;
+    pthread_mutex_lock(&philo->table->forks[fork_index]);
+    pthread_mutex_lock(&philo->state_lock);
+    if (fork_index == left)
+        philo->has_left_fork = 1;
+    else if (fork_index == right)
+        philo->has_right_fork = 1;
+    pthread_mutex_unlock(&philo->state_lock);
+    if (!is_simulation_ended(philo->table))
+        print_action(philo, STATE_TAKEN_FORK);
 }
 
-/**
- * @brief Locks a specific fork and logs the action.
- *
- * Locks the fork at the given index. If the simulation has not ended,
- * prints a log message indicating the fork has been taken.
- *
- * @param philo Pointer to the philosopher structure.
- * @param fork_index Index of the fork to lock.
- */
-void	lock_fork(t_philosophers *philo, int fork_index)
+void    unlock_forks(t_philosophers *philo)
 {
-	pthread_mutex_lock(&philo->table->forks[fork_index]);
-	if (!is_simulation_ended(philo->table))
-		print_action(philo, STATE_TAKEN_FORK);
+    int left;
+    int right;
+    int had_left;
+    int had_right;
+
+    left = philo->id - 1;
+    right = philo->id % philo->table->num_philo;
+    pthread_mutex_lock(&philo->state_lock);
+    had_left = philo->has_left_fork;
+    had_right = philo->has_right_fork;
+    philo->has_left_fork = 0;
+    philo->has_right_fork = 0;
+    pthread_mutex_unlock(&philo->state_lock);
+    if (had_right)
+        pthread_mutex_unlock(&philo->table->forks[right]);
+    if (had_left)
+        pthread_mutex_unlock(&philo->table->forks[left]);
 }
