@@ -10,56 +10,60 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/philo.h"
+#include "philo.h"
 
-int is_simulation_ended(t_table *table)
+/**
+ * @brief Read the end-flag atomically.
+ */
+int	is_simulation_ended(t_table *table)
 {
-    int status;
+	int	status;
 
-    pthread_mutex_lock(&table->simulation_lock);
-    status = table->simulation_ended;
-    pthread_mutex_unlock(&table->simulation_lock);
-    return (status);
+	pthread_mutex_lock(&table->simulation_lock);
+	status = table->simulation_ended;
+	pthread_mutex_unlock(&table->simulation_lock);
+	return (status);
 }
 
-/* Death ends the sim and prints exactly one line. */
-int end_simulation_by_death(t_table *t, t_philosophers *who)
+/**
+ * @brief End by death: flip end-flag and print the death line atomically.
+ */
+int	end_simulation_by_death(t_table *t, t_philosophers *who)
 {
-    int did_end = 0;
+	int		did_end;
+	long	ts;
 
-    /* Serialize with printers first. */
-    pthread_mutex_lock(&t->print_lock);
-
-    pthread_mutex_lock(&t->simulation_lock);
-    if (!t->simulation_ended) {
-        t->simulation_ended = 1;
-        did_end = 1;
-    }
-    pthread_mutex_unlock(&t->simulation_lock);
-
-    if (did_end) {
-        /* Print death while we still hold print_lock so nothing interleaves. */
-        long ts = get_time_in_ms() - t->start_time;
-        printf("%ld %d dies\n", ts, who->id);
-    }
-    pthread_mutex_unlock(&t->print_lock);
-    return did_end;
+	did_end = 0;
+	pthread_mutex_lock(&t->print_lock);
+	pthread_mutex_lock(&t->simulation_lock);
+	if (!t->simulation_ended)
+	{
+		t->simulation_ended = 1;
+		did_end = 1;
+	}
+	pthread_mutex_unlock(&t->simulation_lock);
+	if (did_end)
+	{
+		ts = get_time_in_ms() - t->start_time;
+		printf("%ld %d dies\n", ts, who->id);
+	}
+	pthread_mutex_unlock(&t->print_lock);
+	return (did_end);
 }
 
-/* All-fed ends the sim but prints nothing. We still fence with print_lock. */
-int end_simulation_all_fed(t_table *t)
+/**
+ * @brief End when everyone reached max_meals: flip flag under print_lock fence.
+ */
+int	end_simulation_all_fed(t_table *t)
 {
-    int did_end = 0;
+    int	did_end;
 
     pthread_mutex_lock(&t->print_lock);
-
     pthread_mutex_lock(&t->simulation_lock);
-    if (!t->simulation_ended) {
+    did_end = !t->simulation_ended;
+    if (did_end)
         t->simulation_ended = 1;
-        did_end = 1;
-    }
     pthread_mutex_unlock(&t->simulation_lock);
-
     pthread_mutex_unlock(&t->print_lock);
-    return did_end;
+    return (did_end);
 }

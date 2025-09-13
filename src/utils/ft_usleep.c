@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/philo.h"
+#include "philo.h"
 
 /*
 ** Sleep approximately `milliseconds`, but wake early if the simulation ends.
@@ -34,6 +34,6 @@ void    ft_usleep(int milliseconds, t_table *table)
             slice_us = 500;
         else
             slice_us = 100;
-        usleep(slice_us);
-    }
+		usleep(slice_us);
+	}
 }

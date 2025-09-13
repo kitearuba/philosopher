@@ -6,22 +6,15 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/17 17:27:51 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/06/24 22:55:00 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../../include/philo.h"
 
 /**
- * @brief Parses and validates the command-line arguments.
- *
- * Converts input strings to integers and stores them into the table.
- * Also checks that each input is within valid ranges.
- * Disables color logging if there are too many philosophers (>PHILO_COLOR_CAP).
- *
- * @param table Pointer to the simulation's table structure.
- * @param argc Argument count.
- * @param argv Argument vector.
- * @return 0 on success, 1 on failure.
+ * @brief Parse and validate CLI args into the table.
+ *        All values must be strictly positive; optional max_meals can be absent.
  */
 static t_status	parse_args(t_table *table, int argc, char **argv)
 {
@@ -38,20 +31,12 @@ static t_status	parse_args(t_table *table, int argc, char **argv)
 	if (table->num_philo < 1 || table->time_to_die < 1
 		|| table->time_to_eat < 1 || table->time_to_sleep < 1
 		|| (argc == 6 && table->max_meals < 1))
-	{
 		return (printf("Error: wrong input\n"), FAILURE);
-	}
 	return (SUCCESS);
 }
 
 /**
- * @brief Allocates memory for philosophers and forks.
- *
- * Dynamically allocates memory for the philosophers array and fork mutexes.
- * If allocation fails, prints an error and frees any allocated resources.
- *
- * @param table Pointer to the simulation's table structure.
- * @return 0 on success, 1 on allocation failure.
+ * @brief Allocate arrays for philosophers and fork mutexes.
  */
 static t_status	allocate_simulation_memory(t_table *table)
 {
@@ -61,40 +46,27 @@ static t_status	allocate_simulation_memory(t_table *table)
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
 	{
-	    free(table->philosophers);
-	    table->philosophers = NULL;
-	    return (printf("Error: malloc failed\n"), FAILURE);
+		free(table->philosophers);
+		table->philosophers = NULL;
+		return (printf("Error: malloc failed\n"), FAILURE);
 	}
 	return (SUCCESS);
 }
 
 /**
- * @brief Initializes the main global mutexes used in the simulation.
- *
- * Creates mutexes for printing actions, detecting death,
- * tracking fed philosophers, and signaling simulation end.
- *
- * @param table Pointer to the simulation's table structure.
- * @return 0 on success, 1 on mutex creation failure.
+ * @brief Create global mutexes used across the simulation.
  */
 static t_status	init_mutexes(t_table *table)
 {
 	if (pthread_mutex_init(&table->print_lock, NULL)
-		|| pthread_mutex_init(&table->death_lock, NULL)
 		|| pthread_mutex_init(&table->fed_lock, NULL)
-		|| pthread_mutex_init(&table->simulation_lock, NULL)
-		|| pthread_mutex_init(&table->death_print_lock, NULL))
+		|| pthread_mutex_init(&table->simulation_lock, NULL))
 		return (printf("Error: mutex init failed\n"), FAILURE);
 	return (SUCCESS);
 }
 
 /**
- * @brief Initializes philosopher structures and fork mutexes.
- *
- * Sets default values for each philosopher and initializes fork mutexes.
- * Also links each philosopher to the shared table structure.
- *
- * @param table Pointer to the simulation table.
+ * @brief Initialize per-philosopher fields and one mutex per fork.
  */
 static void	init_philosopher_data(t_table *table)
 {
@@ -110,24 +82,16 @@ static void	init_philosopher_data(t_table *table)
 		table->philosophers[i].meals_eaten = 0;
 		table->philosophers[i].is_fed = 0;
 		table->philosophers[i].last_meal_time = 0;
-	    pthread_mutex_init(&table->philosophers[i].state_lock, NULL);
-	    table->philosophers[i].has_left_fork = 0;
-	    table->philosophers[i].has_right_fork = 0;
+		pthread_mutex_init(&table->philosophers[i].state_lock, NULL);
+		table->philosophers[i].has_left_fork = 0;
+		table->philosophers[i].has_right_fork = 0;
 		table->philosophers[i].table = table;
 		i++;
 	}
 }
 
 /**
- * @brief Fully initializes the simulation environment.
- *
- * Parses user input, allocates memory, initializes all mutexes, and prepares
- * philosophers' data. Called once in main() before starting any threads.
- *
- * @param table Pointer to the already allocated table structure.
- * @param argc Argument count.
- * @param argv Argument values.
- * @return 0 on success, 1 on failure.
+ * @brief Top-level initializer called by main().
  */
 t_status	init_simulation(t_table *table, int argc, char **argv)
 {

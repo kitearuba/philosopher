@@ -19,8 +19,7 @@ NAME 			= philo
 #                            Compiler and Flags                                #
 # **************************************************************************** #
 CC 				= cc
-#CFLAGS			= -Wall -Wextra -Werror #-g -fsanitize=address,undefined -O0
-CFLAGS			= -Wall -Wextra -Werror -g -fsanitize=thread -O2
+CFLAGS			= -Wall -Wextra -Werror
 RM				= rm -rf
 
 # **************************************************************************** #
@@ -81,9 +80,15 @@ fclean: clean
 # Rebuild everything
 re: fclean all
 
+debug: CFLAGS += -g -fsanitize=thread -O2
+debug: re
+
+asan: CFLAGS += -g -fsanitize=address,undefined -O2
+asan: re
+
 # **************************************************************************** #
 #                             Special Rules                                    #
 # **************************************************************************** #
 
 # Phony targets
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug asan

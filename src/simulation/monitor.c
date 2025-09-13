@@ -10,19 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/philo.h"
+#include "philo.h"
 
-/**
- * @brief Checks if a philosopher has died from not eating in time.
- *
- * Compares the current time to the philosopher's last meal time.
- * If the time exceeds time_to_die, logs the death message, sets
- * the simulation end flag, and returns 1.
- *
- * @param table Pointer to the simulation table.
- * @param i Index of the philosopher to check.
- * @return 1 if the philosopher has died, 0 otherwise.
- */
+/** check_death: if (now - last_meal) >= ttdie → end by death. */
 static int	check_death(t_table *table, int i)
 {
 	long	now;
@@ -30,9 +20,9 @@ static int	check_death(t_table *table, int i)
 	long	elapsed;
 
 	now = get_time_in_ms();
-    pthread_mutex_lock(&table->philosophers[i].state_lock);
-    last = table->philosophers[i].last_meal_time;
-    pthread_mutex_unlock(&table->philosophers[i].state_lock);
+	pthread_mutex_lock(&table->philosophers[i].state_lock);
+	last = table->philosophers[i].last_meal_time;
+	pthread_mutex_unlock(&table->philosophers[i].state_lock);
 	elapsed = now - last;
 	if (elapsed >= table->time_to_die)
 	{
@@ -42,15 +32,7 @@ static int	check_death(t_table *table, int i)
 	return (0);
 }
 
-/**
- * @brief Checks if all philosophers have eaten the required number of meals.
- *
- * If max_meals is defined, and total_fed is equal to or exceeds num_philo,
- * logs the completion message and ends the simulation.
- *
- * @param table Pointer to the simulation table.
- * @return 1 if all philosophers are fed, 0 otherwise.
- */
+/** check_all_ate: if max_meals active and all fed → end (no print). */
 static int	check_all_ate(t_table *table)
 {
 	int	all_fed;
@@ -62,23 +44,13 @@ static int	check_all_ate(t_table *table)
 	pthread_mutex_unlock(&table->fed_lock);
 	if (all_fed)
 	{
-	    end_simulation_all_fed(table);   // flips flag, prints nothing
-	    return 1;
+		end_simulation_all_fed(table);
+		return (1);
 	}
 	return (0);
 }
 
-/**
- * @brief Monitoring thread that detects death or completion conditions.
- *
- * Loops continuously while the simulation is active.
- * Checks each philosopher for starvation and verifies if all
- * have reached the max_meals threshold. Ends the simulation
- * immediately if any of these conditions are met.
- *
- * @param arg Pointer to the shared simulation table.
- * @return NULL when monitoring ends.
- */
+/** monitor_death: loop until someone dies or everyone is fed. */
 void	*monitor_death(void *arg)
 {
 	t_table	*table;
