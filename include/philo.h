@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/06/24 22:55:00 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/13 18:43:34 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <string.h>
 
 /* ************************************************************************** */
-/*                                   ENUMS                                     */
+/*                                   Enums                                    */
 /* ************************************************************************** */
 
 /**
@@ -33,11 +33,11 @@
  */
 typedef enum e_state
 {
-	STATE_EATING,
-	STATE_SLEEPING,
-	STATE_THINKING,
-	STATE_TAKEN_FORK,
-	STATE_DIED
+	state_eating,
+	state_sleeping,
+	state_thinking,
+	state_taken_fork,
+	state_died
 }	t_state;
 
 /**
@@ -45,8 +45,8 @@ typedef enum e_state
  */
 typedef enum e_status
 {
-	SUCCESS = 0,
-	FAILURE = 1
+	success = 0,
+	failure = 1
 }	t_status;
 
 /* ************************************************************************** */
@@ -56,11 +56,11 @@ typedef enum e_status
 typedef struct s_table	t_table;
 
 /**
- * @brief Per-philosopher state. All fields that may change at runtime
+ * @brief Per-philosopher state. Fields that change at runtime
  *        (last_meal_time, meals_eaten, has_*_fork) are protected
- *        by either state_lock or fork acquisition rules.
+ *        by state_lock or fork-acquisition rules.
  */
-typedef struct s_philosophers
+typedef struct s_philo
 {
 	int				id;
 	int				meals_eaten;
@@ -71,11 +71,10 @@ typedef struct s_philosophers
 	int				has_left_fork;
 	int				has_right_fork;
 	t_table			*table;
-}	t_philosophers;
+}	t_philo;
 
 /**
  * @brief Global simulation context shared by all threads.
- *        Note the minimal set of mutexes:
  *        - print_lock: serializes stdout
  *        - fed_lock: protects total_fed & is_fed updates
  *        - simulation_lock: protects simulation_ended flag
@@ -94,7 +93,7 @@ typedef struct s_table
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	fed_lock;
 	pthread_mutex_t	simulation_lock;
-	t_philosophers	*philosophers;
+	t_philo			*philosophers;
 }	t_table;
 
 /* ************************************************************************** */
@@ -102,32 +101,32 @@ typedef struct s_table
 /* ************************************************************************** */
 
 /* threads */
-void		*philo_routine(void *arg);
-void		*monitor_death(void *arg);
+void			*philo_routine(void *arg);
+void			*monitor_death(void *arg);
 
 /* forks */
-void		lock_fork(t_philosophers *philo, int fork_index);
-void		unlock_forks(t_philosophers *philo);
+void			lock_fork(t_philo *philo, int fork_index);
+void			unlock_forks(t_philo *philo);
 
 /* time / sleep */
-long		get_time_in_ms(void);
-void		ft_usleep(int milliseconds, t_table *table);
+long			get_time_in_ms(void);
+void			ft_usleep(int milliseconds, t_table *table);
 
 /* printing */
-void		print_action(t_philosophers *philo, t_state state);
+void			print_action(t_philo *philo, t_state state);
 
 /* lifecycle / end */
-int			is_simulation_ended(t_table *table);
-int			end_simulation_by_death(t_table *t, t_philosophers *who);
-int			end_simulation_all_fed(t_table *t);
+int				is_simulation_ended(t_table *table);
+int				end_simulation_by_death(t_table *t, t_philo *who);
+int				end_simulation_all_fed(t_table *t);
 
 /* init / teardown */
-t_status	init_simulation(t_table *table, int argc, char **argv);
-void		start_simulation(t_table *table);
-void		cleanup_simulation(t_table *table);
-int			exit_simulation(t_table *table, int code);
+t_status		init_simulation(t_table *table, int argc, char **argv);
+void			start_simulation(t_table *table);
+void			cleanup_simulation(t_table *table);
+int				exit_simulation(t_table *table, int code);
 
 /* utils */
-int			safe_atoi(const char *str);
+int				safe_atoi(const char *str);
 
 #endif /* PHILO_H */

@@ -6,20 +6,15 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/04/21 21:58:43 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/13 19:44:40 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/philo.h"
+#include "philo.h"
 
 /**
- * @brief Safely converts a string to an integer, with error checking.
- *
- * Handles whitespace, non-digit characters, and integer overflow. If the input
- * is invalid or overflows, and returns 0.
- *
- * @param str The string to convert.
- * @return The converted integer, or 0 if an error occurred.
+ * @brief Convert a numeric string to int (non-negative), return 0 on error.
+ * Rules: skip spaces; only digits allowed; overflow => 0; empty => 0.
  */
 int	safe_atoi(const char *str)
 {
