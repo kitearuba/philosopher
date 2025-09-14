@@ -6,34 +6,63 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/09/13 19:42:10 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/14 23:15:34 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /**
- * @brief Parse and validate CLI args into the table.
- * All values must be strictly positive; optional max_meals can be absent.
+ * @brief Free arrays and optionally destroy forks/global mutexes.
+ * destroy_forks: 1 to destroy fork mutexes;
+ * destroy_globals: 1 to destroy globals.
  */
-static t_status	parse_args(t_table *table, int argc, char **argv)
+static void	cleanup_init_failure(t_table *t, int destroy_forks,
+		int destroy_globals)
+{
+	int	i;
+
+	if (destroy_forks && t->forks)
+	{
+		i = t->num_philo;
+		while (--i >= 0)
+			pthread_mutex_destroy(&t->forks[i]);
+	}
+	if (destroy_globals)
+	{
+		pthread_mutex_destroy(&t->simulation_lock);
+		pthread_mutex_destroy(&t->fed_lock);
+		pthread_mutex_destroy(&t->print_lock);
+	}
+	if (t->forks)
+	{
+		free(t->forks);
+		t->forks = NULL;
+	}
+	if (t->philosophers)
+	{
+		free(t->philosophers);
+		t->philosophers = NULL;
+	}
+}
+
+static t_status	parse_args(t_table *t, int argc, char **argv)
 {
 	if (argc < 5 || argc > 6)
 	{
 		printf("Error: wrong number of args\n");
 		return (failure);
 	}
-	table->num_philo = safe_atoi(argv[1]);
-	table->time_to_die = safe_atoi(argv[2]);
-	table->time_to_eat = safe_atoi(argv[3]);
-	table->time_to_sleep = safe_atoi(argv[4]);
+	t->num_philo = safe_atoi(argv[1]);
+	t->time_to_die = safe_atoi(argv[2]);
+	t->time_to_eat = safe_atoi(argv[3]);
+	t->time_to_sleep = safe_atoi(argv[4]);
 	if (argc == 6)
-		table->max_meals = safe_atoi(argv[5]);
+		t->max_meals = safe_atoi(argv[5]);
 	else
-		table->max_meals = -1;
-	if (table->num_philo < 1 || table->time_to_die < 1
-		|| table->time_to_eat < 1 || table->time_to_sleep < 1
-		|| (argc == 6 && table->max_meals < 1))
+		t->max_meals = -1;
+	if (t->num_philo < 1 || t->time_to_die < 1 || t->time_to_eat < 1
+		|| t->time_to_sleep < 1 || (argc == 6 && t->max_meals < 1))
 	{
 		printf("Error: wrong input\n");
 		return (failure);
@@ -41,82 +70,65 @@ static t_status	parse_args(t_table *table, int argc, char **argv)
 	return (success);
 }
 
-/**
- * @brief Allocate arrays for philosophers and fork mutexes.
- */
-static t_status	allocate_simulation_memory(t_table *table)
+static t_status	allocate_simulation_memory(t_table *t)
 {
-	table->philosophers = malloc(sizeof(t_philo) * table->num_philo);
-	if (!table->philosophers)
+	t->philosophers = malloc(sizeof(t_philo) * t->num_philo);
+	if (!t->philosophers)
 	{
 		printf("Error: malloc failed\n");
 		return (failure);
 	}
-	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
-	if (!table->forks)
+	t->forks = malloc(sizeof(pthread_mutex_t) * t->num_philo);
+	if (!t->forks)
 	{
-		free(table->philosophers);
-		table->philosophers = NULL;
+		free(t->philosophers);
+		t->philosophers = NULL;
 		printf("Error: malloc failed\n");
 		return (failure);
 	}
 	return (success);
 }
 
-/**
- * @brief Create global mutexes used across the simulation.
- */
-static t_status	init_mutexes(t_table *table)
+static t_status	init_mutexes(t_table *t)
 {
-	if (pthread_mutex_init(&table->print_lock, NULL)
-		|| pthread_mutex_init(&table->fed_lock, NULL)
-		|| pthread_mutex_init(&table->simulation_lock, NULL))
+	if (pthread_mutex_init(&t->print_lock, NULL) != 0)
+		return (failure);
+	if (pthread_mutex_init(&t->fed_lock, NULL) != 0)
 	{
-		printf("Error: mutex init failed\n");
+		pthread_mutex_destroy(&t->print_lock);
+		return (failure);
+	}
+	if (pthread_mutex_init(&t->simulation_lock, NULL) != 0)
+	{
+		pthread_mutex_destroy(&t->fed_lock);
+		pthread_mutex_destroy(&t->print_lock);
 		return (failure);
 	}
 	return (success);
 }
 
-/**
- * @brief Initialize per-philosopher fields and one mutex per fork.
- */
-static void	init_philosopher_data(t_table *table)
+t_status	init_simulation(t_table *t, int argc, char **argv)
 {
-	int	i;
-
-	i = 0;
-	while (i < table->num_philo)
-		pthread_mutex_init(&table->forks[i++], NULL);
-	i = 0;
-	while (i < table->num_philo)
+	if (parse_args(t, argc, argv) != success)
+		return (failure);
+	if (allocate_simulation_memory(t) != success)
+		return (failure);
+	if (init_mutexes(t) != success)
 	{
-		table->philosophers[i].id = i + 1;
-		table->philosophers[i].meals_eaten = 0;
-		table->philosophers[i].is_fed = 0;
-		table->philosophers[i].last_meal_time = 0;
-		pthread_mutex_init(&table->philosophers[i].state_lock, NULL);
-		table->philosophers[i].has_left_fork = 0;
-		table->philosophers[i].has_right_fork = 0;
-		table->philosophers[i].table = table;
-		i++;
+		cleanup_init_failure(t, 0, 0);
+		return (failure);
 	}
-}
-
-/**
- * @brief Top-level initializer called by main().
- */
-t_status	init_simulation(t_table *table, int argc, char **argv)
-{
-	if (parse_args(table, argc, argv) != success)
+	t->total_fed = 0;
+	t->simulation_ended = 0;
+	if (init_forks_array(t) != success)
+	{
+		cleanup_init_failure(t, 0, 1);
 		return (failure);
-	if (allocate_simulation_memory(table) != success)
+	}
+	if (init_philos_array(t) != success)
+	{
+		cleanup_init_failure(t, 1, 1);
 		return (failure);
-	if (init_mutexes(table) != success)
-		return (failure);
-	table->total_fed = 0;
-	table->simulation_ended = 0;
-	table->start_time = 0;
-	init_philosopher_data(table);
+	}
 	return (success);
 }

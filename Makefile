@@ -6,7 +6,7 @@
 #    By: chrrodri <chrrodri@student.42barcelon      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/18 10:40:40 by chrrodri          #+#    #+#              #
-#    Updated: 2025/05/10 22:39:11 by chrrodri         ###   ########.fr        #
+#    Updated: 2025/09/14 23:12:05 by chrrodri         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ NAME 			= philo
 CC 				= cc
 CFLAGS			= -Wall -Wextra -Werror
 RM				= rm -rf
+THREADS			= -pthread
 
 # **************************************************************************** #
 #                              Directories                                     #
@@ -40,12 +41,14 @@ DEPS 			= $(HEADER) $(MAKEFILE)
 # **************************************************************************** #
 SRC 		:= $(SRC_DIR)/core/main.c \
                $(SRC_DIR)/init/init.c \
+			   $(SRC_DIR)/init/init_philos.c \
                $(SRC_DIR)/init/safe_atoi.c \
                $(SRC_DIR)/simulation/launch.c \
                $(SRC_DIR)/simulation/monitor.c \
                $(SRC_DIR)/simulation/simulation_end.c \
                $(SRC_DIR)/simulation/routine.c \
                $(SRC_DIR)/simulation/fork_handling.c \
+			   $(SRC_DIR)/simulation/cycle.c \
                $(SRC_DIR)/utils/time.c \
                $(SRC_DIR)/utils/print.c \
                $(SRC_DIR)/utils/ft_usleep.c \
@@ -61,13 +64,13 @@ OBJ			= $(SRC:.c=.o)
 # All rule: Compile everything
 all: $(NAME)
 
-# Build fdf executable
+# Build philo executable
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -I$(INC_DIR) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -I$(INC_DIR) $(THREADS) -o $(NAME)
 
 # Pattern rule for compiling object files
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
-	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INC_DIR) $(THREADS) -c $< -o $@
 
 # Clean object files
 clean:

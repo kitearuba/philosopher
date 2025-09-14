@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/09/13 18:43:34 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/14 23:10:44 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,12 +116,15 @@ void			ft_usleep(int milliseconds, t_table *table);
 void			print_action(t_philo *philo, t_state state);
 
 /* lifecycle / end */
+void			do_cycle(t_philo *philo);
 int				is_simulation_ended(t_table *table);
 int				end_simulation_by_death(t_table *t, t_philo *who);
 int				end_simulation_all_fed(t_table *t);
 
 /* init / teardown */
 t_status		init_simulation(t_table *table, int argc, char **argv);
+t_status		init_forks_array(t_table *t);
+t_status		init_philos_array(t_table *t);
 void			start_simulation(t_table *table);
 void			cleanup_simulation(t_table *table);
 int				exit_simulation(t_table *table, int code);

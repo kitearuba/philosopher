@@ -6,7 +6,7 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 11:21:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/09/13 22:24:00 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/14 21:53:02 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ void	start_simulation(t_table *table)
 		if (pthread_create(&table->philosophers[i].thread,
 				NULL, philo_routine, &table->philosophers[i]) != 0)
 		{
+			pthread_mutex_lock(&table->print_lock);
+			printf("Error: pthread_create failed for philosopher %d\n", i + 1);
+			pthread_mutex_unlock(&table->print_lock);
 			end_simulation_all_fed(table);
 			break ;
 		}

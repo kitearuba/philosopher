@@ -6,13 +6,15 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/05/10 21:52:20 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/14 22:11:00 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/** check_death: if (now - last_meal) >= ttdie → end by death. */
+/**
+ * @brief If (now - last_meal) >= time_to_die → end by death.
+ */
 static int	check_death(t_table *table, int i)
 {
 	long	now;
@@ -32,7 +34,9 @@ static int	check_death(t_table *table, int i)
 	return (0);
 }
 
-/** check_all_ate: if max_meals active and all fed → end (no print). */
+/**
+ * @brief If max_meals active and all fed → end (no print).
+ */
 static int	check_all_ate(t_table *table)
 {
 	int	all_fed;
@@ -50,7 +54,9 @@ static int	check_all_ate(t_table *table)
 	return (0);
 }
 
-/** monitor_death: loop until someone dies or everyone is fed. */
+/**
+ * @brief Monitor loop: stop on death or all-fed.
+ */
 void	*monitor_death(void *arg)
 {
 	t_table	*table;

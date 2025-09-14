@@ -6,43 +6,64 @@
 /*   By: chrrodri <chrrodri@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 15:25:01 by chrrodri          #+#    #+#             */
-/*   Updated: 2025/09/13 22:26:37 by chrrodri         ###   ########.fr       */
+/*   Updated: 2025/09/14 23:21:28 by chrrodri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static void	destroy_philo_mutexes(t_table *t)
+{
+	int	i;
+
+	if (!t->philosophers)
+		return ;
+	i = 0;
+	while (i < t->num_philo)
+	{
+		pthread_mutex_destroy(&t->philosophers[i].state_lock);
+		i++;
+	}
+}
+
+static void	destroy_forks_and_free(t_table *t)
+{
+	int	i;
+
+	if (!t->forks)
+		return ;
+	i = 0;
+	while (i < t->num_philo)
+	{
+		pthread_mutex_destroy(&t->forks[i]);
+		i++;
+	}
+	free(t->forks);
+	t->forks = NULL;
+}
+
+static void	destroy_global_mutexes(t_table *t)
+{
+	pthread_mutex_destroy(&t->print_lock);
+	pthread_mutex_destroy(&t->fed_lock);
+	pthread_mutex_destroy(&t->simulation_lock);
+}
 
 /**
  * @brief Destroy all mutexes and free dynamic memory.
  */
 void	cleanup_simulation(t_table *table)
 {
-	int	i;
-
 	if (!table)
 		return ;
-	if (table->philosophers)
-	{
-		i = 0;
-		while (i < table->num_philo)
-			pthread_mutex_destroy(&table->philosophers[i++].state_lock);
-	}
-	if (table->forks)
-	{
-		i = 0;
-		while (i < table->num_philo)
-			pthread_mutex_destroy(&table->forks[i++]);
-		free(table->forks);
-		table->forks = NULL;
-	}
+	destroy_philo_mutexes(table);
+	destroy_forks_and_free(table);
 	if (table->philosophers)
 	{
 		free(table->philosophers);
 		table->philosophers = NULL;
 	}
-	pthread_mutex_destroy(&table->print_lock);
-	pthread_mutex_destroy(&table->fed_lock);
-	pthread_mutex_destroy(&table->simulation_lock);
+	destroy_global_mutexes(table);
 }
 
 /**
